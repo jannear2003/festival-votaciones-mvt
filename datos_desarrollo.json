@@ -1,0 +1,187 @@
+[
+{
+  "model": "elecciones.festival",
+  "pk": 1,
+  "fields": {
+    "nombre": "Festival de la Leyenda Vallenata",
+    "descripcion": "Festival configurable",
+    "activo": true,
+    "creado_en": "2026-10-14T04:52:52.057Z"
+  }
+},
+{
+  "model": "elecciones.edicion",
+  "pk": 1,
+  "fields": {
+    "festival": 1,
+    "nombre": "Festival de la Leyenda Vallenata 2027",
+    "anio": 2027,
+    "fecha_inicio": "2027-04-26",
+    "fecha_fin": "2027-05-02",
+    "descripcion": "",
+    "estado": "ACTIVA"
+  }
+},
+{
+  "model": "elecciones.categoria",
+  "pk": 1,
+  "fields": {
+    "edicion": 1,
+    "nombre": "Categoría demostrativa",
+    "descripcion": "Categoría creada desde datos configurables.",
+    "reglas": "Reglas pendientes de validación institucional.",
+    "orden": 1,
+    "estado": "ACTIVO",
+    "visible_publicamente": true,
+    "creado_en": "2026-10-14T04:52:52.073Z",
+    "actualizado_en": "2026-10-14T04:52:52.073Z"
+  }
+},
+{
+  "model": "elecciones.categoria",
+  "pk": 2,
+  "fields": {
+    "edicion": 1,
+    "nombre": "Acordeón profesional",
+    "descripcion": "Categoría configurable para la edición 2027.",
+    "reglas": "Las reglas definitivas están pendientes de validación institucional.",
+    "orden": 1,
+    "estado": "ACTIVO",
+    "visible_publicamente": true,
+    "creado_en": "2026-10-14T05:13:55.313Z",
+    "actualizado_en": "2026-10-14T05:13:55.313Z"
+  }
+},
+{
+  "model": "elecciones.categoria",
+  "pk": 3,
+  "fields": {
+    "edicion": 1,
+    "nombre": "Categoría de validación",
+    "descripcion": "",
+    "reglas": "",
+    "orden": 1,
+    "estado": "BORRADOR",
+    "visible_publicamente": false,
+    "creado_en": "2026-10-14T05:16:06.840Z",
+    "actualizado_en": "2026-10-14T05:16:06.840Z"
+  }
+},
+{
+  "model": "elecciones.tipovotacion",
+  "pk": 1,
+  "fields": {
+    "nombre": "Participación del público",
+    "descripcion": "Votación demostrativa del público.",
+    "activo": true
+  }
+},
+{
+  "model": "elecciones.votacion",
+  "pk": 1,
+  "fields": {
+    "categoria": 1,
+    "tipo": 1,
+    "nombre": "Votación demostrativa 2027",
+    "slug": "votacion-demostrativa-2027",
+    "descripcion": "Prueba del núcleo configurable MVT.",
+    "fecha_apertura": "2026-10-13T04:52:52.083Z",
+    "fecha_cierre": "2026-10-21T04:52:52.083Z",
+    "estado": "ABIERTA",
+    "publicada": true,
+    "resultados_publicos": false,
+    "creado_en": "2026-10-14T04:52:52.083Z",
+    "actualizado_en": "2026-10-14T04:52:52.084Z"
+  }
+},
+{
+  "model": "elecciones.votacion",
+  "pk": 2,
+  "fields": {
+    "categoria": 2,
+    "tipo": 1,
+    "nombre": "Premio del público - Acordeón profesional 2027",
+    "slug": "premio-del-publico-acordeon-profesional-2027",
+    "descripcion": "Votación demostrativa para la categoría Acordeón profesional.",
+    "fecha_apertura": "2026-10-14T05:19:44Z",
+    "fecha_cierre": "2026-10-15T11:00:00Z",
+    "estado": "ABIERTA",
+    "publicada": true,
+    "resultados_publicos": false,
+    "creado_en": "2026-10-14T05:22:19.250Z",
+    "actualizado_en": "2026-10-14T05:22:19.250Z"
+  }
+},
+{
+  "model": "elecciones.opcion",
+  "pk": 1,
+  "fields": {
+    "votacion": 1,
+    "nombre": "Opción A",
+    "descripcion": "",
+    "imagen": "",
+    "orden": 1,
+    "activa": true
+  }
+},
+{
+  "model": "elecciones.opcion",
+  "pk": 2,
+  "fields": {
+    "votacion": 1,
+    "nombre": "Opción B",
+    "descripcion": "",
+    "imagen": "",
+    "orden": 2,
+    "activa": true
+  }
+},
+{
+  "model": "elecciones.opcion",
+  "pk": 3,
+  "fields": {
+    "votacion": 1,
+    "nombre": "Opción C",
+    "descripcion": "",
+    "imagen": "",
+    "orden": 3,
+    "activa": true
+  }
+},
+{
+  "model": "elecciones.opcion",
+  "pk": 4,
+  "fields": {
+    "votacion": 2,
+    "nombre": "Participante A",
+    "descripcion": "",
+    "imagen": "",
+    "orden": 1,
+    "activa": true
+  }
+},
+{
+  "model": "elecciones.opcion",
+  "pk": 5,
+  "fields": {
+    "votacion": 2,
+    "nombre": "Participante B",
+    "descripcion": "",
+    "imagen": "",
+    "orden": 2,
+    "activa": true
+  }
+},
+{
+  "model": "elecciones.opcion",
+  "pk": 6,
+  "fields": {
+    "votacion": 2,
+    "nombre": "Participante C",
+    "descripcion": "",
+    "imagen": "",
+    "orden": 3,
+    "activa": true
+  }
+}
+]
