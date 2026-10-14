@@ -4,6 +4,7 @@
 {% block title %}Resultado {{ votacion.nombre }}{% endblock %}
 
 {% block content %}
+{% include "elecciones/_admin_nav.html" %}
 <nav class="crumb" aria-label="Migas de navegación">
     <a href="{% url 'elecciones:resultados_lista' %}">Resultados</a> / {{ votacion.nombre }}
 </nav>

@@ -59,3 +59,11 @@ body{background:linear-gradient(180deg,#fffaf0 0,#f7efe4 48%,#fbf6ea 100%)}
 footer{background:var(--vino-900);color:#fff;border:0}
 @media(max-width:800px){.top{position:static}.hero{min-height:570px;background-position:62% center;background-image:linear-gradient(180deg,rgba(45,8,10,.18) 0%,rgba(69,10,13,.94) 68%),url('/static/images/festival-hero.webp')}.panel-head{flex-direction:column}.grid>.card{min-height:auto}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.btn,.vote-option{transition:none}.card:hover,.btn:hover,.vote-option:hover{transform:none}}
+
+/* ===== Mejora visual fase 2 ===== */
+.vote-card{padding:0!important}.vote-card::before{display:none!important}.vote-card__image{aspect-ratio:3/2;overflow:hidden;background:#e8dccb}.vote-card__image img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}.vote-card:hover .vote-card__image img{transform:scale(1.035)}.vote-card>:not(.vote-card__image){margin-left:20px;margin-right:20px}.vote-card>:last-child{margin-bottom:20px}.vote-card .badge{align-self:flex-start;margin-top:18px}
+.admin-nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px;padding:10px;border-radius:16px;background:#fff;border:1px solid #dfcfba;box-shadow:0 9px 24px rgba(69,16,13,.07)}.admin-nav a{padding:10px 13px;border-radius:10px;color:var(--azul);font-weight:800;text-decoration:none}.admin-nav a:hover,.admin-nav a:focus-visible{background:#f5e6c8;color:var(--vino)}
+.form-card{background:#fff;padding:clamp(20px,4vw,34px);border:1px solid #dfcfba;border-radius:22px;box-shadow:var(--sombra)}.form-card h1,.form-card h2{font-family:Georgia,serif;color:var(--oscuro)}.form-card .field{padding-bottom:15px;border-bottom:1px solid #eee3d2}.form-card .field:last-of-type{border-bottom:0}.option-row{box-shadow:0 8px 20px rgba(69,16,13,.06)}
+@media(max-width:800px){.admin-nav{display:grid;grid-template-columns:1fr 1fr}.vote-card>:not(.vote-card__image){margin-left:16px;margin-right:16px}}
+@media(max-width:480px){.admin-nav{grid-template-columns:1fr}.vote-card__image{aspect-ratio:16/10}}
+@media(prefers-reduced-motion:reduce){.vote-card__image img{transition:none}.vote-card:hover .vote-card__image img{transform:none}}

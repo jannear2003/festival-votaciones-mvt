@@ -1,11 +1,20 @@
-Sustituya estos tres archivos en el Codespace:
+MEJORA VISUAL MVT - FASE 2
 
-1. templates/elecciones/resultado_publico.html
-2. templates/elecciones/resultado_detalle_admin.html
-3. static/css/app.css
+Contenido:
+- aplicar_mejora_visual_fase2.py
+- fase2_assets/ (tres imagenes WebP)
 
-Después ejecute:
-python manage.py check
-python manage.py runserver 0.0.0.0:8000
+Aplicacion en Codespaces:
+1. Cargue el ZIP en la raiz junto a manage.py.
+2. Detenga Django con Ctrl + C.
+3. Ejecute: unzip -o Mejora_Visual_MVT_Fase2.zip
+4. Ejecute: python aplicar_mejora_visual_fase2.py
+5. Ejecute: rm aplicar_mejora_visual_fase2.py
+6. Ejecute: rm -rf fase2_assets
+7. Ejecute: rm Mejora_Visual_MVT_Fase2.zip
+8. Ejecute: python manage.py check
+9. Ejecute: python manage.py runserver 0.0.0.0:8000
+10. Actualice el navegador con Ctrl + F5.
 
-Actualice el navegador con Ctrl + F5.
+El aplicador crea respaldo_visual_fase2 con las plantillas previas.
+No modifica modelos, migraciones, base de datos, vistas, formularios ni rutas.
