@@ -1,0 +1,11 @@
+Sustituya estos tres archivos en el Codespace:
+
+1. templates/elecciones/resultado_publico.html
+2. templates/elecciones/resultado_detalle_admin.html
+3. static/css/app.css
+
+Después ejecute:
+python manage.py check
+python manage.py runserver 0.0.0.0:8000
+
+Actualice el navegador con Ctrl + F5.

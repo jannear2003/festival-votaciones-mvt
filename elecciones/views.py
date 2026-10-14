@@ -223,3 +223,110 @@ def comprobante_voto(request, slug):
 def participacion_duplicada(request, slug):
     votacion = get_object_or_404(Votacion, slug=slug)
     return render(request, "elecciones/participacion_duplicada.html", {"votacion": votacion}, status=409)
+
+from django.db.models import Max
+from .forms import PublicacionResultadoForm
+from .models import EventoAuditoria, PublicacionResultado
+from .services import consolidar_resultados, registrar_evento
+
+
+@login_required
+def resultados_lista(request):
+    votaciones = Votacion.objects.select_related("categoria", "categoria__edicion", "tipo").annotate(
+        total_votos=Count("votos"),
+        total_publicaciones=Count("publicaciones_resultado", distinct=True),
+    )
+    q = request.GET.get("q", "").strip()
+    edicion = request.GET.get("edicion", "").strip()
+    estado = request.GET.get("estado", "").strip()
+    if q:
+        votaciones = votaciones.filter(Q(nombre__icontains=q) | Q(categoria__nombre__icontains=q))
+    if edicion:
+        votaciones = votaciones.filter(categoria__edicion_id=edicion)
+    if estado:
+        votaciones = votaciones.filter(estado=estado)
+    return render(request, "elecciones/resultados_lista.html", {
+        "votaciones": votaciones,
+        "ediciones": Edicion.objects.all(),
+        "estados": Votacion.Estado.choices,
+        "filtros": {"q": q, "edicion": edicion, "estado": estado},
+    })
+
+
+@login_required
+def resultado_detalle_admin(request, pk):
+    votacion = get_object_or_404(Votacion.objects.select_related("categoria", "categoria__edicion", "tipo"), pk=pk)
+    resumen = consolidar_resultados(votacion)
+    publicacion = votacion.publicaciones_resultado.filter(activa=True).first()
+    form = PublicacionResultadoForm()
+    return render(request, "elecciones/resultado_detalle_admin.html", {
+        "votacion": votacion,
+        "resumen": resumen,
+        "publicacion": publicacion,
+        "form": form,
+    })
+
+
+@login_required
+def publicar_resultado(request, pk):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    votacion = get_object_or_404(Votacion.objects.select_related("categoria"), pk=pk)
+    form = PublicacionResultadoForm(request.POST)
+    if not form.is_valid():
+        messages.error(request, "Revise la observación ingresada.")
+        return redirect("elecciones:resultado_detalle_admin", pk=pk)
+    if votacion.estado != Votacion.Estado.CERRADA:
+        messages.error(request, "Solo se pueden publicar resultados de una votación cerrada.")
+        return redirect("elecciones:resultado_detalle_admin", pk=pk)
+    if not votacion.resultados_publicos:
+        messages.error(request, "Habilite la opción Resultados públicos en la configuración de la votación.")
+        return redirect("elecciones:resultado_detalle_admin", pk=pk)
+    resumen = consolidar_resultados(votacion)
+    if resumen["total_votos"] == 0:
+        messages.error(request, "No es posible publicar una votación sin votos registrados.")
+        return redirect("elecciones:resultado_detalle_admin", pk=pk)
+    with transaction.atomic():
+        PublicacionResultado.objects.filter(votacion=votacion, activa=True).update(activa=False, retirada_en=timezone.now())
+        ultima = PublicacionResultado.objects.filter(votacion=votacion).aggregate(maxima=Max("version"))["maxima"] or 0
+        publicacion = PublicacionResultado.objects.create(
+            votacion=votacion,
+            version=ultima + 1,
+            resumen=resumen,
+            observacion=form.cleaned_data["observacion"],
+            publicada_por=request.user,
+            activa=True,
+        )
+        registrar_evento(request, "PUBLICAR_RESULTADOS", "Votacion", votacion.pk, {"version": publicacion.version, "total_votos": resumen["total_votos"]})
+    messages.success(request, f"Resultados publicados en la versión {publicacion.version}.")
+    return redirect("elecciones:resultado_detalle_admin", pk=pk)
+
+
+@login_required
+def retirar_resultado(request, pk):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    votacion = get_object_or_404(Votacion, pk=pk)
+    publicacion = votacion.publicaciones_resultado.filter(activa=True).first()
+    if not publicacion:
+        messages.warning(request, "La votación no tiene resultados públicos activos.")
+    else:
+        with transaction.atomic():
+            publicacion.activa = False
+            publicacion.retirada_en = timezone.now()
+            publicacion.save(update_fields=["activa", "retirada_en"])
+            registrar_evento(request, "RETIRAR_RESULTADOS", "Votacion", votacion.pk, {"version": publicacion.version})
+        messages.success(request, "Los resultados fueron retirados del portal público.")
+    return redirect("elecciones:resultado_detalle_admin", pk=pk)
+
+
+def resultado_publico(request, slug):
+    votacion = get_object_or_404(Votacion.objects.select_related("categoria", "categoria__edicion", "tipo"), slug=slug, resultados_publicos=True)
+    publicacion = get_object_or_404(PublicacionResultado, votacion=votacion, activa=True)
+    return render(request, "elecciones/resultado_publico.html", {"votacion": votacion, "publicacion": publicacion, "resumen": publicacion.resumen})
+
+
+@login_required
+def auditoria_lista(request):
+    eventos = EventoAuditoria.objects.select_related("usuario")[:200]
+    return render(request, "elecciones/auditoria_lista.html", {"eventos": eventos})

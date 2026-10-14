@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load l10n %}
+
+{% block title %}Resultados {{ votacion.nombre }}{% endblock %}
+
+{% block content %}
+<section class="results-public" aria-labelledby="titulo-resultados">
+    <p class="eyebrow dark">Resultados autorizados</p>
+    <h1 id="titulo-resultados">{{ votacion.nombre }}</h1>
+    <p>{{ votacion.categoria.edicion.nombre }} · {{ votacion.categoria.nombre }}</p>
+
+    <div class="result-total public" aria-label="Total de votos contabilizados">
+        <strong>{{ resumen.total_votos }}</strong>
+        <span>votos contabilizados</span>
+    </div>
+
+    <div class="result-bars">
+        {% for fila in resumen.opciones %}
+        <article class="result-row{% if fila.votos == 0 %} zero-votes{% endif %}{% if fila.lider %} leader{% endif %}">
+            <div class="result-label">
+                <strong>{{ fila.nombre }}</strong>
+                <span>{{ fila.votos }} votos · {{ fila.porcentaje }}%</span>
+            </div>
+            <div class="bar-track" role="img" aria-label="{{ fila.nombre }}: {{ fila.porcentaje }} por ciento">
+                <span style="width:{{ fila.porcentaje|unlocalize }}%"></span>
+            </div>
+        </article>
+        {% empty %}
+        <div class="empty">No hay opciones disponibles en esta publicación.</div>
+        {% endfor %}
+    </div>
+
+    <p class="publication-meta">
+        Publicación versión {{ publicacion.version }} · {{ publicacion.publicada_en|date:'d/m/Y H:i' }}
+    </p>
+
+    <a class="btn" href="{% url 'elecciones:inicio' %}">Volver al inicio</a>
+</section>
+{% endblock %}

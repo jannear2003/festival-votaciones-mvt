@@ -113,3 +113,11 @@ class SeleccionVotoForm(forms.Form):
         super().__init__(*args, **kwargs)
         if votacion is not None:
             self.fields["opcion"].queryset = votacion.opciones.filter(activa=True).order_by("orden", "nombre")
+
+class PublicacionResultadoForm(forms.Form):
+    observacion = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 3}),
+        label="Observación de publicación",
+        help_text="Registre una justificación o nota de control para esta versión.",
+    )

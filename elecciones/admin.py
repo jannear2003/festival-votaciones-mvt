@@ -81,3 +81,19 @@ class VotoAdmin(admin.ModelAdmin):
     list_filter = ("votacion", "registrado_en")
     search_fields = ("participacion__referencia", "votacion__nombre")
     readonly_fields = ("participacion", "votacion", "opcion", "registrado_en")
+
+from .models import EventoAuditoria, PublicacionResultado
+
+@admin.register(PublicacionResultado)
+class PublicacionResultadoAdmin(admin.ModelAdmin):
+    list_display = ("votacion", "version", "activa", "publicada_por", "publicada_en", "retirada_en")
+    list_filter = ("activa", "votacion")
+    search_fields = ("votacion__nombre", "observacion")
+    readonly_fields = ("votacion", "version", "resumen", "observacion", "publicada_por", "publicada_en", "activa", "retirada_en")
+
+@admin.register(EventoAuditoria)
+class EventoAuditoriaAdmin(admin.ModelAdmin):
+    list_display = ("creado_en", "usuario", "accion", "entidad", "identificador", "direccion_ip")
+    list_filter = ("accion", "entidad", "creado_en")
+    search_fields = ("accion", "entidad", "identificador", "usuario__username")
+    readonly_fields = ("usuario", "accion", "entidad", "identificador", "detalle", "direccion_ip", "creado_en")

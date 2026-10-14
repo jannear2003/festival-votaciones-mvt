@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load l10n %}
+
+{% block title %}Resultado {{ votacion.nombre }}{% endblock %}
+
+{% block content %}
+<nav class="crumb" aria-label="Migas de navegación">
+    <a href="{% url 'elecciones:resultados_lista' %}">Resultados</a> / {{ votacion.nombre }}
+</nav>
+
+<div class="panel-head">
+    <div>
+        <p class="eyebrow dark">Consolidación administrativa</p>
+        <h1>{{ votacion.nombre }}</h1>
+        <p>{{ votacion.categoria.nombre }} · {{ votacion.get_estado_display }}</p>
+    </div>
+    <div class="result-total" aria-label="Total de votos registrados">
+        <strong>{{ resumen.total_votos }}</strong>
+        <span>votos registrados</span>
+    </div>
+</div>
+
+{% if resumen.empate %}
+<div class="notice" role="status">
+    <strong>Empate detectado:</strong> {{ resumen.lideres|join:', ' }}
+</div>
+{% endif %}
+
+<div class="result-bars">
+    {% for fila in resumen.opciones %}
+    <article class="result-row{% if fila.votos == 0 %} zero-votes{% endif %}{% if fila.lider %} leader{% endif %}">
+        <div class="result-label">
+            <strong>{{ fila.nombre }}</strong>
+            <span>{{ fila.votos }} votos · {{ fila.porcentaje }}%</span>
+        </div>
+        <div class="bar-track" role="img" aria-label="{{ fila.nombre }}: {{ fila.porcentaje }} por ciento">
+            <span style="width:{{ fila.porcentaje|unlocalize }}%"></span>
+        </div>
+    </article>
+    {% empty %}
+    <div class="empty">No hay opciones configuradas.</div>
+    {% endfor %}
+</div>
+
+<section class="card publish-card" aria-labelledby="titulo-publicacion">
+    <h2 id="titulo-publicacion">Publicación</h2>
+    {% if publicacion %}
+    <p>
+        Versión activa: <strong>{{ publicacion.version }}</strong>, publicada el
+        {{ publicacion.publicada_en|date:'d/m/Y H:i' }}.
+    </p>
+    <form method="post" action="{% url 'elecciones:retirar_resultado' votacion.pk %}">
+        {% csrf_token %}
+        <button class="btn danger" type="submit">Retirar resultados públicos</button>
+    </form>
+    {% else %}
+    <form method="post" action="{% url 'elecciones:publicar_resultado' votacion.pk %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn" type="submit">Publicar resultados</button>
+    </form>
+    {% endif %}
+</section>
+{% endblock %}

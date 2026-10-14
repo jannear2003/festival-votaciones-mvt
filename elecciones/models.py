@@ -201,3 +201,45 @@ class Voto(models.Model):
 
     def __str__(self):
         return f"{self.votacion} · {self.participacion.referencia}"
+
+from django.conf import settings
+
+
+class PublicacionResultado(models.Model):
+    votacion = models.ForeignKey(Votacion, on_delete=models.PROTECT, related_name="publicaciones_resultado")
+    version = models.PositiveIntegerField()
+    resumen = models.JSONField(default=dict)
+    observacion = models.TextField(blank=True)
+    publicada_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="resultados_publicados")
+    publicada_en = models.DateTimeField(auto_now_add=True)
+    activa = models.BooleanField(default=True)
+    retirada_en = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "publicación de resultado"
+        verbose_name_plural = "publicaciones de resultados"
+        ordering = ["-publicada_en"]
+        constraints = [
+            models.UniqueConstraint(fields=["votacion", "version"], name="version_resultado_unica_por_votacion")
+        ]
+
+    def __str__(self):
+        return f"{self.votacion} · versión {self.version}"
+
+
+class EventoAuditoria(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="eventos_auditoria")
+    accion = models.CharField(max_length=80)
+    entidad = models.CharField(max_length=80)
+    identificador = models.CharField(max_length=80)
+    detalle = models.JSONField(default=dict, blank=True)
+    direccion_ip = models.GenericIPAddressField(null=True, blank=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "evento de auditoría"
+        verbose_name_plural = "eventos de auditoría"
+        ordering = ["-creado_en"]
+
+    def __str__(self):
+        return f"{self.accion} · {self.entidad} {self.identificador}"
