@@ -64,3 +64,87 @@ def categorias_copiar(request):
         if omitidas: messages.warning(request,f"Se omitieron {len(omitidas)} categoría(s) porque ya existían en el destino.")
         return redirect("elecciones:categorias_lista")
     return render(request,"elecciones/categorias_copiar.html",{"form":form})
+
+from django.db import transaction
+from .forms import OpcionFormSet, VotacionForm
+
+
+@login_required
+def votaciones_lista(request):
+    votaciones = Votacion.objects.select_related("categoria", "categoria__edicion", "tipo").annotate(total_opciones=Count("opciones"))
+    q = request.GET.get("q", "").strip(); edicion = request.GET.get("edicion", "").strip(); estado = request.GET.get("estado", "").strip(); publicada = request.GET.get("publicada", "").strip()
+    if q:
+        votaciones = votaciones.filter(Q(nombre__icontains=q) | Q(categoria__nombre__icontains=q) | Q(tipo__nombre__icontains=q))
+    if edicion:
+        votaciones = votaciones.filter(categoria__edicion_id=edicion)
+    if estado:
+        votaciones = votaciones.filter(estado=estado)
+    if publicada in {"si", "no"}:
+        votaciones = votaciones.filter(publicada=publicada == "si")
+    return render(request, "elecciones/votaciones_lista.html", {"votaciones": votaciones, "ediciones": Edicion.objects.all(), "estados": Votacion.Estado.choices, "filtros": {"q": q, "edicion": edicion, "estado": estado, "publicada": publicada}})
+
+
+def _guardar_votacion(request, instancia=None):
+    form = VotacionForm(request.POST or None, instance=instancia)
+    formset = OpcionFormSet(request.POST or None, instance=instancia, prefix="opciones")
+    if request.method == "POST" and form.is_valid() and formset.is_valid():
+        with transaction.atomic():
+            votacion = form.save()
+            formset.instance = votacion
+            formset.save()
+        messages.success(request, f"La votación “{votacion.nombre}” fue guardada correctamente.")
+        return redirect("elecciones:votaciones_lista")
+    return render(request, "elecciones/votacion_form.html", {"form": form, "formset": formset, "titulo": "Editar votación" if instancia else "Crear votación", "votacion": instancia})
+
+
+@login_required
+def votacion_crear(request):
+    return _guardar_votacion(request)
+
+
+@login_required
+def votacion_editar(request, pk):
+    return _guardar_votacion(request, get_object_or_404(Votacion, pk=pk))
+
+
+@login_required
+def votacion_publicacion(request, pk, accion):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    votacion = get_object_or_404(Votacion.objects.select_related("categoria"), pk=pk)
+    if accion not in {"publicar", "retirar"}:
+        messages.error(request, "La acción solicitada no es válida.")
+        return redirect("elecciones:votaciones_lista")
+    if accion == "publicar":
+        votacion.publicada = True
+        if votacion.estado == Votacion.Estado.BORRADOR:
+            votacion.estado = Votacion.Estado.PROGRAMADA
+    else:
+        votacion.publicada = False
+    try:
+        votacion.full_clean()
+        votacion.save(update_fields=["publicada", "estado", "actualizado_en"])
+        messages.success(request, "La votación fue publicada." if votacion.publicada else "La votación fue retirada del portal público.")
+    except Exception as exc:
+        messages.error(request, f"No fue posible completar la operación: {exc}")
+    return redirect("elecciones:votaciones_lista")
+
+
+@login_required
+def votacion_estado(request, pk, estado):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    estados_validos = {valor for valor, etiqueta in Votacion.Estado.choices}
+    votacion = get_object_or_404(Votacion, pk=pk)
+    if estado not in estados_validos:
+        messages.error(request, "El estado solicitado no es válido.")
+    else:
+        votacion.estado = estado
+        if estado in {Votacion.Estado.BORRADOR, Votacion.Estado.CANCELADA}:
+            votacion.publicada = False
+        try:
+            votacion.full_clean(); votacion.save(update_fields=["estado", "publicada", "actualizado_en"])
+            messages.success(request, f"La votación ahora está {votacion.get_estado_display().lower()}.")
+        except Exception as exc:
+            messages.error(request, f"No fue posible cambiar el estado: {exc}")
+    return redirect("elecciones:votaciones_lista")
