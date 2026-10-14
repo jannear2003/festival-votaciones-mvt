@@ -135,3 +135,22 @@ STORAGES = {
                     else 'django.contrib.staticfiles.storage.StaticFilesStorage')
     },
 }
+# Configuración para GitHub Codespaces y proxy HTTPS
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+CODESPACE_NAME = os.getenv("CODESPACE_NAME", "")
+if CODESPACE_NAME:
+    ALLOWED_HOSTS.append(
+        f"{CODESPACE_NAME}-8000.app.github.dev"
+    )
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://localhost:8000",
+    "http://localhost:8000",
+]
+
+if CODESPACE_NAME:
+    CSRF_TRUSTED_ORIGINS.append(
+        f"https://{CODESPACE_NAME}-8000.app.github.dev"
+    )
