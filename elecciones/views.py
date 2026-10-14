@@ -148,3 +148,78 @@ def votacion_estado(request, pk, estado):
         except Exception as exc:
             messages.error(request, f"No fue posible cambiar el estado: {exc}")
     return redirect("elecciones:votaciones_lista")
+
+import secrets
+from django.db import IntegrityError
+from django.utils import timezone
+from .forms import SeleccionVotoForm
+from .models import Participacion, Voto
+
+
+def _votacion_habilitada(slug):
+    ahora = timezone.now()
+    return get_object_or_404(Votacion.objects.select_related("categoria", "categoria__edicion", "tipo").prefetch_related("opciones"), slug=slug, publicada=True, estado=Votacion.Estado.ABIERTA, categoria__estado=EstadoBase.ACTIVO, categoria__visible_publicamente=True, fecha_apertura__lte=ahora, fecha_cierre__gte=ahora)
+
+
+def _asegurar_sesion(request):
+    if not request.session.session_key:
+        request.session.create()
+    return request.session.session_key
+
+
+def participar(request, slug):
+    votacion = _votacion_habilitada(slug)
+    clave_sesion = _asegurar_sesion(request)
+    if Participacion.objects.filter(votacion=votacion, clave_sesion=clave_sesion, estado=Participacion.Estado.CONFIRMADA).exists():
+        messages.warning(request, "Esta sesión ya registró una participación en la votación.")
+        return redirect("elecciones:participacion_duplicada", slug=slug)
+    form = SeleccionVotoForm(request.POST or None, votacion=votacion)
+    if request.method == "POST" and form.is_valid():
+        request.session[f"seleccion_votacion_{votacion.pk}"] = form.cleaned_data["opcion"].pk
+        return redirect("elecciones:revisar_voto", slug=slug)
+    return render(request, "elecciones/participar.html", {"votacion": votacion, "form": form})
+
+
+def revisar_voto(request, slug):
+    votacion = _votacion_habilitada(slug)
+    opcion_id = request.session.get(f"seleccion_votacion_{votacion.pk}")
+    if not opcion_id:
+        messages.info(request, "Seleccione una opción antes de revisar la participación.")
+        return redirect("elecciones:participar", slug=slug)
+    opcion = get_object_or_404(votacion.opciones, pk=opcion_id, activa=True)
+    return render(request, "elecciones/revisar_voto.html", {"votacion": votacion, "opcion": opcion})
+
+
+def confirmar_voto(request, slug):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    votacion = _votacion_habilitada(slug)
+    opcion_id = request.session.get(f"seleccion_votacion_{votacion.pk}")
+    opcion = get_object_or_404(votacion.opciones, pk=opcion_id, activa=True)
+    clave_sesion = _asegurar_sesion(request)
+    try:
+        with transaction.atomic():
+            participacion = Participacion.objects.create(votacion=votacion, referencia=f"VOT-{timezone.now():%Y%m%d}-{secrets.token_hex(4).upper()}", clave_sesion=clave_sesion, estado=Participacion.Estado.CONFIRMADA, confirmada_en=timezone.now())
+            voto = Voto(participacion=participacion, votacion=votacion, opcion=opcion)
+            voto.full_clean()
+            voto.save()
+    except IntegrityError:
+        messages.warning(request, "Esta sesión ya registró una participación en la votación.")
+        return redirect("elecciones:participacion_duplicada", slug=slug)
+    request.session.pop(f"seleccion_votacion_{votacion.pk}", None)
+    request.session[f"referencia_votacion_{votacion.pk}"] = participacion.referencia
+    return redirect("elecciones:comprobante_voto", slug=slug)
+
+
+def comprobante_voto(request, slug):
+    votacion = get_object_or_404(Votacion, slug=slug)
+    referencia = request.session.get(f"referencia_votacion_{votacion.pk}")
+    if not referencia:
+        return redirect("elecciones:detalle", slug=slug)
+    participacion = get_object_or_404(Participacion, referencia=referencia, clave_sesion=_asegurar_sesion(request))
+    return render(request, "elecciones/comprobante_voto.html", {"votacion": votacion, "participacion": participacion})
+
+
+def participacion_duplicada(request, slug):
+    votacion = get_object_or_404(Votacion, slug=slug)
+    return render(request, "elecciones/participacion_duplicada.html", {"votacion": votacion}, status=409)

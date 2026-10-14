@@ -154,3 +154,50 @@ class Opcion(models.Model):
 
     def __str__(self):
         return self.nombre
+
+class Participacion(models.Model):
+    class Estado(models.TextChoices):
+        INICIADA = "INICIADA", "Iniciada"
+        CONFIRMADA = "CONFIRMADA", "Confirmada"
+        ANULADA = "ANULADA", "Anulada"
+
+    votacion = models.ForeignKey(Votacion, on_delete=models.PROTECT, related_name="participaciones")
+    referencia = models.CharField(max_length=40, unique=True)
+    clave_sesion = models.CharField(max_length=40)
+    estado = models.CharField(max_length=12, choices=Estado.choices, default=Estado.INICIADA)
+    iniciada_en = models.DateTimeField(auto_now_add=True)
+    confirmada_en = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "participación"
+        verbose_name_plural = "participaciones"
+        ordering = ["-iniciada_en"]
+        constraints = [models.UniqueConstraint(fields=["votacion", "clave_sesion"], name="una_participacion_por_votacion_y_sesion")]
+
+    def __str__(self):
+        return self.referencia
+
+
+class Voto(models.Model):
+    participacion = models.OneToOneField(Participacion, on_delete=models.PROTECT, related_name="voto")
+    votacion = models.ForeignKey(Votacion, on_delete=models.PROTECT, related_name="votos")
+    opcion = models.ForeignKey(Opcion, on_delete=models.PROTECT, related_name="votos")
+    registrado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "voto"
+        verbose_name_plural = "votos"
+        ordering = ["-registrado_en"]
+        constraints = [models.UniqueConstraint(fields=["votacion", "participacion"], name="voto_unico_por_participacion")]
+
+    def clean(self):
+        errors = {}
+        if self.opcion_id and self.votacion_id and self.opcion.votacion_id != self.votacion_id:
+            errors["opcion"] = "La opción seleccionada no pertenece a la votación."
+        if self.participacion_id and self.votacion_id and self.participacion.votacion_id != self.votacion_id:
+            errors["participacion"] = "La participación no corresponde a la votación."
+        if errors:
+            raise ValidationError(errors)
+
+    def __str__(self):
+        return f"{self.votacion} · {self.participacion.referencia}"

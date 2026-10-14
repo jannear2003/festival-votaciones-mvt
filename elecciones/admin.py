@@ -65,3 +65,19 @@ class OpcionAdmin(admin.ModelAdmin):
 admin.site.site_header = "Administración Festival Vallenato"
 admin.site.site_title = "Festival Vallenato"
 admin.site.index_title = "Configuración de ediciones y votaciones"
+
+from .models import Participacion, Voto
+
+@admin.register(Participacion)
+class ParticipacionAdmin(admin.ModelAdmin):
+    list_display = ("referencia", "votacion", "estado", "iniciada_en", "confirmada_en")
+    list_filter = ("estado", "votacion")
+    search_fields = ("referencia", "votacion__nombre")
+    readonly_fields = ("referencia", "clave_sesion", "iniciada_en", "confirmada_en")
+
+@admin.register(Voto)
+class VotoAdmin(admin.ModelAdmin):
+    list_display = ("participacion", "votacion", "opcion", "registrado_en")
+    list_filter = ("votacion", "registrado_en")
+    search_fields = ("participacion__referencia", "votacion__nombre")
+    readonly_fields = ("participacion", "votacion", "opcion", "registrado_en")

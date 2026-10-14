@@ -105,3 +105,11 @@ OpcionFormSet = inlineformset_factory(
     min_num=2,
     validate_min=True,
 )
+
+class SeleccionVotoForm(forms.Form):
+    opcion = forms.ModelChoiceField(queryset=Opcion.objects.none(), widget=forms.RadioSelect, empty_label=None, label="Seleccione una opción")
+
+    def __init__(self, *args, votacion=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if votacion is not None:
+            self.fields["opcion"].queryset = votacion.opciones.filter(activa=True).order_by("orden", "nombre")
