@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import os
 import importlib.util
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,8 +49,8 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'elecciones.middleware.RolePermissionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'elecciones.middleware.RolePermissionMiddleware',    
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -155,3 +156,14 @@ if CODESPACE_NAME:
     CSRF_TRUSTED_ORIGINS.append(
         f"https://{CODESPACE_NAME}-8000.app.github.dev"
     )
+    if "test" in sys.argv:
+        STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": (
+                "django.contrib.staticfiles.storage.StaticFilesStorage"
+            ),
+        },
+    }
