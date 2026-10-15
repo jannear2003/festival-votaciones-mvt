@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Votacion no disponible{% endblock %}
+
+{% block content %}
+<nav class="crumb" aria-label="Migas de navegacion">
+    <a href="{% url 'elecciones:inicio' %}">Inicio</a> / {{ votacion.nombre }}
+</nav>
+
+<section class="card form-card access-denied" aria-labelledby="titulo-estado-votacion">
+    <p class="eyebrow dark">Estado de la votacion</p>
+    <h1 id="titulo-estado-votacion">{{ votacion.nombre }}</h1>
+
+    {% if motivo == "NO_INICIADA" %}
+    <div class="notice" role="status">
+        <h2>La votacion todavia no ha iniciado</h2>
+        <p>
+            Podras participar a partir del
+            <strong>{{ votacion.fecha_apertura|date:"d/m/Y" }}</strong>
+            a las <strong>{{ votacion.fecha_apertura|date:"H:i" }}</strong>.
+        </p>
+    </div>
+    {% elif motivo == "FINALIZADA" %}
+    <div class="notice" role="status">
+        <h2>El periodo de participacion finalizo</h2>
+        <p>
+            Esta votacion cerro el
+            <strong>{{ votacion.fecha_cierre|date:"d/m/Y" }}</strong>
+            a las <strong>{{ votacion.fecha_cierre|date:"H:i" }}</strong>.
+        </p>
+    </div>
+    {% elif motivo == "CANCELADA" %}
+    <div class="notice" role="status">
+        <h2>La votacion fue cancelada</h2>
+        <p>No se estan recibiendo participaciones.</p>
+    </div>
+    {% elif motivo == "NO_PUBLICADA" %}
+    <div class="notice" role="status">
+        <h2>La votacion no esta disponible</h2>
+        <p>Actualmente no se encuentra habilitada en el portal publico.</p>
+    </div>
+    {% elif motivo == "CATEGORIA_INACTIVA" or motivo == "CATEGORIA_NO_VISIBLE" %}
+    <div class="notice" role="status">
+        <h2>La categoria no esta habilitada</h2>
+        <p>Esta votacion no esta disponible para participacion publica.</p>
+    </div>
+    {% else %}
+    <div class="notice" role="status">
+        <h2>La votacion no esta abierta</h2>
+        <p>No es posible registrar una participacion en este momento.</p>
+    </div>
+    {% endif %}
+
+    <div class="actions">
+        <a class="btn" href="{% url 'elecciones:inicio' %}">Volver al portal</a>
+        <a class="btn alt" href="{% url 'elecciones:detalle' votacion.slug %}">Consultar votacion</a>
+    </div>
+</section>
+{% endblock %}

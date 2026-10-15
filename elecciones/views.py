@@ -168,16 +168,69 @@ def _asegurar_sesion(request):
 
 
 def participar(request, slug):
-    votacion = _votacion_habilitada(slug)
+    # El 404 queda reservado para un slug que realmente no existe.
+    votacion = get_object_or_404(
+        Votacion.objects.select_related(
+            "categoria",
+            "categoria__edicion",
+            "tipo",
+        ),
+        slug=slug,
+    )
+    ahora = timezone.now()
+
+    motivo_no_disponible = None
+    if not votacion.publicada:
+        motivo_no_disponible = "NO_PUBLICADA"
+    elif votacion.estado == Votacion.Estado.CANCELADA:
+        motivo_no_disponible = "CANCELADA"
+    elif votacion.categoria.estado != "ACTIVO":
+        motivo_no_disponible = "CATEGORIA_INACTIVA"
+    elif not votacion.categoria.visible_publicamente:
+        motivo_no_disponible = "CATEGORIA_NO_VISIBLE"
+    elif ahora < votacion.fecha_apertura:
+        motivo_no_disponible = "NO_INICIADA"
+    elif ahora > votacion.fecha_cierre:
+        motivo_no_disponible = "FINALIZADA"
+    elif votacion.estado != Votacion.Estado.ABIERTA:
+        motivo_no_disponible = "NO_ABIERTA"
+
+    if motivo_no_disponible:
+        return render(
+            request,
+            "elecciones/votacion_no_disponible.html",
+            {
+                "votacion": votacion,
+                "motivo": motivo_no_disponible,
+                "ahora": ahora,
+            },
+            status=403,
+        )
+
     clave_sesion = _asegurar_sesion(request)
-    if Participacion.objects.filter(votacion=votacion, clave_sesion=clave_sesion, estado=Participacion.Estado.CONFIRMADA).exists():
-        messages.warning(request, "Esta sesión ya registró una participación en la votación.")
+    if Participacion.objects.filter(
+        votacion=votacion,
+        clave_sesion=clave_sesion,
+        estado=Participacion.Estado.CONFIRMADA,
+    ).exists():
+        messages.warning(
+            request,
+            "Esta sesion ya registro una participacion en la votacion.",
+        )
         return redirect("elecciones:participacion_duplicada", slug=slug)
+
     form = SeleccionVotoForm(request.POST or None, votacion=votacion)
     if request.method == "POST" and form.is_valid():
-        request.session[f"seleccion_votacion_{votacion.pk}"] = form.cleaned_data["opcion"].pk
+        request.session[f"seleccion_votacion_{votacion.pk}"] = (
+            form.cleaned_data["opcion"].pk
+        )
         return redirect("elecciones:revisar_voto", slug=slug)
-    return render(request, "elecciones/participar.html", {"votacion": votacion, "form": form})
+
+    return render(
+        request,
+        "elecciones/participar.html",
+        {"votacion": votacion, "form": form},
+    )
 
 
 def revisar_voto(request, slug):
