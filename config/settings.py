@@ -22,13 +22,34 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-=xj-%i@*rr*l48*8cqnwf(cx9am=$e(f%+a(lnpf+x@2zpx3uv')
+def env_bool(name, default=False):
+    return os.getenv(name, str(default)).strip().lower() in {
+        "1", "true", "yes", "on"
+    }
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = [h.strip() for h in os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if h.strip()]
+DJANGO_PRODUCTION = env_bool("DJANGO_PRODUCTION", False)
+
+_secret_key = os.getenv("DJANGO_SECRET_KEY", "").strip()
+if DJANGO_PRODUCTION and not _secret_key:
+    raise RuntimeError(
+        "DJANGO_SECRET_KEY es obligatoria en Produccion."
+    )
+
+SECRET_KEY = _secret_key or "django-insecure-solo-para-validacion-local"
+DEBUG = False if DJANGO_PRODUCTION else env_bool("DJANGO_DEBUG", True)
+
+_default_hosts = "" if DJANGO_PRODUCTION else "127.0.0.1,localhost"
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv("DJANGO_ALLOWED_HOSTS", _default_hosts).split(",")
+    if host.strip()
+]
+
+if DJANGO_PRODUCTION and not ALLOWED_HOSTS:
+    raise RuntimeError(
+        "DJANGO_ALLOWED_HOSTS es obligatoria en Produccion."
+    )
 
 
 # Application definition
@@ -80,7 +101,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DB_ENGINE = os.getenv("DB_ENGINE", "sqlite").strip().lower()
+DB_ENGINE = os.getenv(
+    "DB_ENGINE",
+    "postgresql" if DJANGO_PRODUCTION else "sqlite",
+).strip().lower()
+
+if DJANGO_PRODUCTION and DB_ENGINE != "postgresql":
+    raise RuntimeError(
+        "Produccion requiere DB_ENGINE=postgresql."
+    )
 
 if DB_ENGINE == "postgresql":
     required_database_variables = (
@@ -167,7 +196,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 LOGIN_URL = '/cuentas/login/'
@@ -221,6 +250,33 @@ if CODESPACE_NAME:
 
     if codespace_origin not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(codespace_origin)
+
+
+# Controles de seguridad exclusivos del unico ambiente desplegado.
+if DJANGO_PRODUCTION:
+    if DEBUG:
+        raise RuntimeError("DEBUG debe ser False en Produccion.")
+
+    if not configured_csrf_origins:
+        raise RuntimeError(
+            "DJANGO_CSRF_TRUSTED_ORIGINS es obligatoria en Produccion."
+        )
+
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    CSRF_COOKIE_HTTPONLY = True
+    SECURE_HSTS_SECONDS = int(
+        os.getenv("SECURE_HSTS_SECONDS", "31536000")
+    )
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool(
+        "SECURE_HSTS_INCLUDE_SUBDOMAINS", True
+    )
+    SECURE_HSTS_PRELOAD = env_bool("SECURE_HSTS_PRELOAD", True)
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = "DENY"
+    SECURE_REFERRER_POLICY = "same-origin"
 
 
 # Las pruebas no deben depender de un manifiesto generado por collectstatic.
