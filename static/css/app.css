@@ -67,3 +67,8 @@ footer{background:var(--vino-900);color:#fff;border:0}
 @media(max-width:800px){.admin-nav{display:grid;grid-template-columns:1fr 1fr}.vote-card>:not(.vote-card__image){margin-left:16px;margin-right:16px}}
 @media(max-width:480px){.admin-nav{grid-template-columns:1fr}.vote-card__image{aspect-ratio:16/10}}
 @media(prefers-reduced-motion:reduce){.vote-card__image img{transition:none}.vote-card:hover .vote-card__image img{transform:none}}
+
+
+/* ===== Incremento 6 roles y permisos ===== */
+.access-denied{max-width:720px;margin:42px auto;border-top:6px solid var(--vino)}
+.role-summary{display:flex;gap:8px;flex-wrap:wrap}.role-chip{padding:5px 9px;border-radius:999px;background:#e8effa;color:#17365d;font-weight:800;font-size:.82rem}

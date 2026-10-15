@@ -1,8 +1,16 @@
 <nav class="admin-nav" aria-label="Navegación administrativa">
   <a href="{% url 'elecciones:panel' %}">Panel</a>
+  {% if perms.elecciones.view_categoria %}
   <a href="{% url 'elecciones:categorias_lista' %}">Categorías</a>
+  {% endif %}
+  {% if perms.elecciones.view_votacion %}
   <a href="{% url 'elecciones:votaciones_lista' %}">Votaciones</a>
+  {% endif %}
+  {% if perms.elecciones.view_voto %}
   <a href="{% url 'elecciones:resultados_lista' %}">Resultados</a>
+  {% endif %}
+  {% if perms.elecciones.view_eventoauditoria %}
   <a href="{% url 'elecciones:auditoria_lista' %}">Auditoría</a>
+  {% endif %}
   <a href="{% url 'elecciones:inicio' %}">Portal público</a>
 </nav>

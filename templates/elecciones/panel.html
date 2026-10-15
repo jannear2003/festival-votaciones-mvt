@@ -1,2 +1,14 @@
 {% extends 'base.html' %}{% block title %}Panel administrativo{% endblock %}{% block content %}
-{% include "elecciones/_admin_nav.html" %}<div class="panel-head"><div><p class="eyebrow dark">Administración</p><h1>Panel de configuración</h1></div><div class="actions"><a class="btn alt" href="{% url 'elecciones:categorias_lista' %}">Gestionar categorías</a><a class="btn alt" href="{% url 'elecciones:votaciones_lista' %}">Gestionar votaciones</a><a class="btn" href="/admin/">Django Admin</a></div><a class="btn alt" href="{% url 'elecciones:resultados_lista' %}">Resultados</a><a class="btn alt" href="{% url 'elecciones:auditoria_lista' %}">Auditoría</a></div><div class="stats"><article><strong>{{ ediciones }}</strong><span>Ediciones</span></article><article><strong>{{ categorias }}</strong><span>Categorías</span></article><article><strong>{{ votaciones }}</strong><span>Votaciones</span></article><article><strong>{{ publicadas }}</strong><span>Publicadas</span></article></div><section class="card"><h2>Últimas votaciones</h2><ul>{% for v in ultimas %}<li>{{ v.nombre }} · {{ v.categoria.edicion.nombre }} · {{ v.get_estado_display }}</li>{% empty %}<li>No hay registros.</li>{% endfor %}</ul></section>{% endblock %}
+{% include "elecciones/_admin_nav.html" %}<div class="panel-head"><div><p class="eyebrow dark">Administración</p><h1>Panel de configuración</h1></div><div class="actions">{% if perms.elecciones.view_categoria %}
+{% if perms.elecciones.view_eventoauditoria %}
+<a class="btn alt" href="{% url 'elecciones:categorias_lista' %}">Gestionar categorías</a>
+{% endif %}{% if perms.elecciones.view_votacion %}
+<a class="btn alt" href="{% url 'elecciones:votaciones_lista' %}">Gestionar votaciones</a>
+{% endif %}{% if user.is_staff %}
+<a class="btn" href="/admin/">Django Admin</a>
+{% endif %}</div>{% if perms.elecciones.view_voto %}
+<a class="btn alt" href="{% url 'elecciones:resultados_lista' %}">Resultados</a>
+{% endif %}{% if perms.elecciones.view_eventoauditoria %}
+<a class="btn alt" href="{% url 'elecciones:auditoria_lista' %}">Auditoría</a>
+{% endif %}
+{% endif %}</div><div class="stats"><article><strong>{{ ediciones }}</strong><span>Ediciones</span></article><article><strong>{{ categorias }}</strong><span>Categorías</span></article><article><strong>{{ votaciones }}</strong><span>Votaciones</span></article><article><strong>{{ publicadas }}</strong><span>Publicadas</span></article></div><section class="card"><h2>Últimas votaciones</h2><ul>{% for v in ultimas %}<li>{{ v.nombre }} · {{ v.categoria.edicion.nombre }} · {{ v.get_estado_display }}</li>{% empty %}<li>No hay registros.</li>{% endfor %}</ul></section>{% endblock %}
