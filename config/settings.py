@@ -80,12 +80,57 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DB_ENGINE = os.getenv("DB_ENGINE", "sqlite").strip().lower()
+
+if DB_ENGINE == "postgresql":
+    required_database_variables = (
+        "DB_NAME",
+        "DB_USER",
+        "DB_PASSWORD",
+        "DB_HOST",
+    )
+
+    missing_database_variables = [
+        variable
+        for variable in required_database_variables
+        if not os.getenv(variable)
+    ]
+
+    if missing_database_variables:
+        raise RuntimeError(
+            "Faltan variables obligatorias de PostgreSQL: "
+            + ", ".join(missing_database_variables)
+        )
+
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ["DB_NAME"],
+            "USER": os.environ["DB_USER"],
+            "PASSWORD": os.environ["DB_PASSWORD"],
+            "HOST": os.environ["DB_HOST"],
+            "PORT": os.getenv("DB_PORT", "5432"),
+            "CONN_MAX_AGE": 60,
+            "CONN_HEALTH_CHECKS": True,
+            "OPTIONS": {
+                "sslmode": os.getenv("DB_SSLMODE", "require"),
+            },
+        }
     }
-}
+
+elif DB_ENGINE == "sqlite":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+
+else:
+    raise RuntimeError(
+        "DB_ENGINE debe ser 'postgresql' o 'sqlite'. "
+        f"Valor recibido: {DB_ENGINE}"
+    )
 
 
 # Password validation
@@ -138,28 +183,53 @@ STORAGES = {
     },
 }
 # Configuración para GitHub Codespaces y proxy HTTPS
+# Configuración para proxies HTTPS, GitHub Codespaces y Azure App Service
 USE_X_FORWARDED_HOST = True
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_PROXY_SSL_HEADER = (
+    "HTTP_X_FORWARDED_PROTO",
+    "https",
+)
 
 CODESPACE_NAME = os.getenv("CODESPACE_NAME", "")
+
 if CODESPACE_NAME:
-    ALLOWED_HOSTS.append(
-        f"{CODESPACE_NAME}-8000.app.github.dev"
-    )
+    codespace_host = f"{CODESPACE_NAME}-8000.app.github.dev"
+
+    if codespace_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(codespace_host)
+
+
+configured_csrf_origins = [
+    origin.strip()
+    for origin in os.getenv(
+        "DJANGO_CSRF_TRUSTED_ORIGINS",
+        "",
+    ).split(",")
+    if origin.strip()
+]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://localhost:8000",
     "http://localhost:8000",
+    *configured_csrf_origins,
 ]
 
 if CODESPACE_NAME:
-    CSRF_TRUSTED_ORIGINS.append(
+    codespace_origin = (
         f"https://{CODESPACE_NAME}-8000.app.github.dev"
     )
-    if "test" in sys.argv:
-        STORAGES = {
+
+    if codespace_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(codespace_origin)
+
+
+# Las pruebas no deben depender de un manifiesto generado por collectstatic.
+if "test" in sys.argv:
+    STORAGES = {
         "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
+            "BACKEND": (
+                "django.core.files.storage.FileSystemStorage"
+            ),
         },
         "staticfiles": {
             "BACKEND": (
