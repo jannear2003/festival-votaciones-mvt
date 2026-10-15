@@ -43,6 +43,7 @@
     {% endfor %}
 </div>
 
+{% if publicacion or perms.elecciones.add_publicacionresultado %}
 <section class="card publish-card" aria-labelledby="titulo-publicacion">
     <h2 id="titulo-publicacion">Publicación</h2>
     {% if publicacion %}
@@ -50,16 +51,23 @@
         Versión activa: <strong>{{ publicacion.version }}</strong>, publicada el
         {{ publicacion.publicada_en|date:'d/m/Y H:i' }}.
     </p>
-    <form method="post" action="{% url 'elecciones:retirar_resultado' votacion.pk %}">
+    {% if perms.elecciones.change_publicacionresultado %}
+<form method="post" action="{% url 'elecciones:retirar_resultado' votacion.pk %}">
         {% csrf_token %}
         <button class="btn danger" type="submit">Retirar resultados públicos</button>
     </form>
+{% else %}
+<p class="notice">La publicación está activa. Esta cuenta dispone de consulta, pero no puede retirarla.</p>
+{% endif %}
     {% else %}
-    <form method="post" action="{% url 'elecciones:publicar_resultado' votacion.pk %}">
+    {% if perms.elecciones.add_publicacionresultado %}
+<form method="post" action="{% url 'elecciones:publicar_resultado' votacion.pk %}">
         {% csrf_token %}
         {{ form.as_p }}
         <button class="btn" type="submit">Publicar resultados</button>
     </form>
+{% endif %}
     {% endif %}
 </section>
+{% endif %}
 {% endblock %}

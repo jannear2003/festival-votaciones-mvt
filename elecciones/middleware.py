@@ -21,8 +21,8 @@ class RolePermissionMiddleware:
         'elecciones:votaciones_lista': 'elecciones.view_votacion',
         'elecciones:votacion_nueva': 'elecciones.add_votacion',
         'elecciones:votacion_editar': 'elecciones.change_votacion',
-        'elecciones:votacion_publicacion': 'elecciones.change_votacion',
-        'elecciones:votacion_cerrar': 'elecciones.change_votacion',
+        'elecciones:votacion_publicacion': 'elecciones.publicar_votacion',
+        'elecciones:votacion_cerrar': 'elecciones.operar_votacion',
         # Resultados
         'elecciones:resultados_lista': 'elecciones.view_voto',
         'elecciones:resultado_detalle_admin': 'elecciones.view_voto',
