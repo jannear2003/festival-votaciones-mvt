@@ -1,0 +1,212 @@
+name: Validar y desplegar a Azure Produccion
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: azure-production
+  cancel-in-progress: false
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  validate:
+    name: Validar con PostgreSQL temporal
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: festival_ci
+          POSTGRES_USER: festival_ci
+          POSTGRES_PASSWORD: festival_ci_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U festival_ci -d festival_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DJANGO_PRODUCTION: "False"
+      DJANGO_DEBUG: "False"
+      DJANGO_SECRET_KEY: "ci-only-secret-key-not-for-production"
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1"
+      DB_ENGINE: "postgresql"
+      DB_NAME: "festival_ci"
+      DB_USER: "festival_ci"
+      DB_PASSWORD: "festival_ci_password"
+      DB_HOST: "127.0.0.1"
+      DB_PORT: "5432"
+      DB_SSLMODE: "disable"
+    steps:
+      - name: Obtener codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Validar configuracion y migraciones
+        run: |
+          python manage.py check
+          python manage.py makemigrations --check --dry-run
+          python manage.py migrate --noinput
+
+      - name: Ejecutar pruebas
+        run: python manage.py test
+
+      - name: Validar archivos estaticos
+        run: python manage.py collectstatic --noinput
+
+      - name: Crear paquete de despliegue
+        run: |
+          zip -r deploy.zip . \
+            -x ".git/*" ".github/*" ".env" ".venv/*" \
+               "db.sqlite3" "staticfiles/*" "*.zip" \
+               "__pycache__/*" "*/__pycache__/*"
+
+      - name: Publicar artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: django-production-package
+          path: deploy.zip
+          retention-days: 7
+
+  deploy:
+    name: Migrar y desplegar Produccion
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Obtener codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Autenticar en Azure con OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Configurar App Service
+        shell: bash
+        run: |
+          az webapp config appsettings set \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --name "${{ vars.AZURE_WEBAPP_NAME }}" \
+            --settings \
+              DJANGO_PRODUCTION=True \
+              DJANGO_DEBUG=False \
+              DJANGO_SECRET_KEY="${{ secrets.PROD_DJANGO_SECRET_KEY }}" \
+              DJANGO_ALLOWED_HOSTS="${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net" \
+              DJANGO_CSRF_TRUSTED_ORIGINS="https://${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net" \
+              DB_ENGINE=postgresql \
+              DB_NAME="${{ vars.AZURE_POSTGRES_DATABASE }}" \
+              DB_USER="${{ secrets.PROD_DB_USER }}" \
+              DB_PASSWORD="${{ secrets.PROD_DB_PASSWORD }}" \
+              DB_HOST="${{ vars.AZURE_POSTGRES_SERVER }}.postgres.database.azure.com" \
+              DB_PORT=5432 \
+              DB_SSLMODE=require \
+              GUNICORN_WORKERS=2 \
+              GUNICORN_TIMEOUT=600 \
+              SECURE_HSTS_SECONDS=31536000 \
+              SCM_DO_BUILD_DURING_DEPLOYMENT=true
+          az webapp config set \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --name "${{ vars.AZURE_WEBAPP_NAME }}" \
+            --startup-file "startup.sh"
+
+      - name: Abrir firewall temporal para migraciones
+        id: firewall
+        shell: bash
+        run: |
+          RUNNER_IP="$(curl -fsS https://api.ipify.org)"
+          RULE_NAME="github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "runner_ip=$RUNNER_IP" >> "$GITHUB_OUTPUT"
+          echo "rule_name=$RULE_NAME" >> "$GITHUB_OUTPUT"
+          az postgres flexible-server firewall-rule create \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --name "$RULE_NAME" \
+            --server-name "${{ vars.AZURE_POSTGRES_SERVER }}" \
+            --start-ip-address "$RUNNER_IP" \
+            --end-ip-address "$RUNNER_IP"
+
+      - name: Aplicar migraciones productivas
+        env:
+          DJANGO_PRODUCTION: "True"
+          DJANGO_DEBUG: "False"
+          DJANGO_SECRET_KEY: ${{ secrets.PROD_DJANGO_SECRET_KEY }}
+          DJANGO_ALLOWED_HOSTS: ${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net
+          DJANGO_CSRF_TRUSTED_ORIGINS: https://${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net
+          DB_ENGINE: postgresql
+          DB_NAME: ${{ vars.AZURE_POSTGRES_DATABASE }}
+          DB_USER: ${{ secrets.PROD_DB_USER }}
+          DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+          DB_HOST: ${{ vars.AZURE_POSTGRES_SERVER }}.postgres.database.azure.com
+          DB_PORT: "5432"
+          DB_SSLMODE: require
+        run: |
+          python manage.py check --deploy
+          python manage.py migrate --noinput
+
+      - name: Cerrar firewall temporal
+        if: always() && steps.firewall.outputs.rule_name != ''
+        shell: bash
+        run: |
+          az postgres flexible-server firewall-rule delete \
+            --yes \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --server-name "${{ vars.AZURE_POSTGRES_SERVER }}" \
+            --name "${{ steps.firewall.outputs.rule_name }}"
+
+      - name: Descargar artefacto
+        uses: actions/download-artifact@v4
+        with:
+          name: django-production-package
+
+      - name: Desplegar App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          package: deploy.zip
+
+      - name: Reiniciar aplicacion
+        run: az webapp restart --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" --name "${{ vars.AZURE_WEBAPP_NAME }}"
+
+      - name: Verificar disponibilidad
+        shell: bash
+        run: |
+          URL="https://${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net/"
+          for intento in {1..12}; do
+            status="$(curl -L -sS -o /dev/null -w '%{http_code}' "$URL" || true)"
+            if [[ "$status" == "200" || "$status" == "302" ]]; then
+              echo "Aplicacion disponible: HTTP $status"
+              exit 0
+            fi
+            echo "Intento $intento: HTTP $status. Esperando 15 segundos..."
+            sleep 15
+          done
+          echo "La aplicacion no supero la verificacion de disponibilidad."
+          exit 1
