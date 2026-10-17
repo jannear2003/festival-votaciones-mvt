@@ -4,7 +4,7 @@ from django.db.models import Count, Q
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from .forms import CategoriaForm, CopiarCategoriasForm
+from .forms import CategoriaForm, CopiarCategoriasForm, RegistroUsuarioForm
 from .models import Categoria, Edicion, EstadoBase, Votacion
 
 def inicio(request):
@@ -12,6 +12,28 @@ def inicio(request):
     if edicion:
         votaciones = Votacion.objects.filter(categoria__edicion=edicion, categoria__estado=EstadoBase.ACTIVO, categoria__visible_publicamente=True, publicada=True).select_related("categoria", "tipo").annotate(total_opciones=Count("opciones", filter=Q(opciones__activa=True)))
     return render(request, "elecciones/inicio.html", {"edicion": edicion, "votaciones": votaciones})
+
+def registrar_usuario(request):
+    if request.user.is_authenticated:
+        messages.info(request, "La sesion ya esta iniciada.")
+        return redirect("elecciones:inicio")
+
+    form = RegistroUsuarioForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        usuario = form.save()
+        messages.success(
+            request,
+            f"La cuenta de {usuario.username} fue creada correctamente. "
+            "Ya puede iniciar sesion.",
+        )
+        return redirect("login")
+
+    return render(
+        request,
+        "registration/registro.html",
+        {"form": form},
+    )
+
 
 def detalle(request, slug):
     votacion = get_object_or_404(Votacion.objects.select_related("categoria", "categoria__edicion", "tipo").prefetch_related("opciones"), slug=slug, publicada=True, categoria__visible_publicamente=True)
