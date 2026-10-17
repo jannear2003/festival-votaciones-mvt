@@ -246,7 +246,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 LOGIN_URL = '/cuentas/login/'
-LOGIN_REDIRECT_URL = '/administracion/'
+LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 STORAGES = {
