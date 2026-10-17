@@ -1,7 +1,34 @@
 from django import forms
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from .models import Categoria, Edicion, EstadoBase
+
+class RegistroUsuarioForm(UserCreationForm):
+    first_name = forms.CharField(max_length=150, required=True, label="Nombres")
+    last_name = forms.CharField(max_length=150, required=True, label="Apellidos")
+    email = forms.EmailField(required=True, label="Correo electronico")
+
+    class Meta(UserCreationForm.Meta):
+        model = get_user_model()
+        fields = (
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "password1",
+            "password2",
+        )
+
+    def clean_email(self):
+        email = self.cleaned_data["email"].strip().lower()
+        if get_user_model().objects.filter(email__iexact=email).exists():
+            raise ValidationError(
+                "Ya existe una cuenta registrada con este correo."
+            )
+        return email
+
 
 class CategoriaForm(forms.ModelForm):
     class Meta:

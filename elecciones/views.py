@@ -1,17 +1,68 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
 from django.db.models import Count, Q
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
-from .forms import CategoriaForm, CopiarCategoriasForm
+from django.urls import reverse, reverse_lazy
+from .forms import CategoriaForm, CopiarCategoriasForm, RegistroUsuarioForm
 from .models import Categoria, Edicion, EstadoBase, Votacion
+
+class LoginPorRolView(LoginView):
+    template_name = "registration/login.html"
+
+    ADMINISTRATIVE_GROUPS = {
+        "Administrador general",
+        "Configurador",
+        "Operador",
+        "Publicador",
+        "Auditor",
+    }
+
+    def get_success_url(self):
+        next_url = self.get_redirect_url()
+        if next_url:
+            return next_url
+
+        user = self.request.user
+        if (
+            user.is_superuser
+            or user.groups.filter(
+                name__in=self.ADMINISTRATIVE_GROUPS
+            ).exists()
+        ):
+            return reverse_lazy("elecciones:panel")
+
+        return reverse_lazy("elecciones:inicio")
+
 
 def inicio(request):
     edicion = Edicion.objects.filter(estado=Edicion.Estado.ACTIVA).order_by("-anio").first(); votaciones = Votacion.objects.none()
     if edicion:
         votaciones = Votacion.objects.filter(categoria__edicion=edicion, categoria__estado=EstadoBase.ACTIVO, categoria__visible_publicamente=True, publicada=True).select_related("categoria", "tipo").annotate(total_opciones=Count("opciones", filter=Q(opciones__activa=True)))
     return render(request, "elecciones/inicio.html", {"edicion": edicion, "votaciones": votaciones})
+
+def registrar_usuario(request):
+    if request.user.is_authenticated:
+        messages.info(request, "La sesion ya esta iniciada.")
+        return redirect("elecciones:inicio")
+
+    form = RegistroUsuarioForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        usuario = form.save()
+        messages.success(
+            request,
+            f"La cuenta de {usuario.username} fue creada correctamente. "
+            "Ya puede iniciar sesion.",
+        )
+        return redirect("login")
+
+    return render(
+        request,
+        "registration/registro.html",
+        {"form": form},
+    )
+
 
 def detalle(request, slug):
     votacion = get_object_or_404(Votacion.objects.select_related("categoria", "categoria__edicion", "tipo").prefetch_related("opciones"), slug=slug, publicada=True, categoria__visible_publicamente=True)

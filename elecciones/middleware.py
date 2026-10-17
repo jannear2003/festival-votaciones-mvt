@@ -1,47 +1,67 @@
-from django.contrib import messages
-from django.shortcuts import redirect
-from django.urls import resolve, reverse
+from django.contrib.auth.views import redirect_to_login
+from django.core.exceptions import PermissionDenied
+from django.urls import resolve
 
 
 class RolePermissionMiddleware:
-    """Autoriza rutas administrativas según permisos de Django.
+    """Protege el bloque administrativo con grupos y permisos de Django."""
 
-    Los superusuarios conservan acceso total. Los usuarios autenticados sin el
-    permiso requerido reciben un mensaje y regresan al panel administrativo.
-    """
+    ADMINISTRATIVE_GROUPS = {
+        "Administrador general",
+        "Configurador",
+        "Operador",
+        "Publicador",
+        "Auditor",
+    }
 
     ROUTE_PERMISSIONS = {
-        # Categorías
-        'elecciones:categorias_lista': 'elecciones.view_categoria',
-        'elecciones:categoria_nueva': 'elecciones.add_categoria',
-        'elecciones:categoria_editar': 'elecciones.change_categoria',
-        'elecciones:categoria_estado': 'elecciones.change_categoria',
-        'elecciones:categorias_copiar': 'elecciones.add_categoria',
-        # Votaciones y opciones
-        'elecciones:votaciones_lista': 'elecciones.view_votacion',
-        'elecciones:votacion_nueva': 'elecciones.add_votacion',
-        'elecciones:votacion_editar': 'elecciones.change_votacion',
-        'elecciones:votacion_publicacion': 'elecciones.publicar_votacion',
-        'elecciones:votacion_cerrar': 'elecciones.operar_votacion',
-        # Resultados
-        'elecciones:resultados_lista': 'elecciones.view_voto',
-        'elecciones:resultado_detalle_admin': 'elecciones.view_voto',
-        'elecciones:publicar_resultado': 'elecciones.add_publicacionresultado',
-        'elecciones:retirar_resultado': 'elecciones.change_publicacionresultado',
-        # Auditoría
-        'elecciones:auditoria_lista': 'elecciones.view_eventoauditoria',
+        "elecciones:categorias_lista": "elecciones.view_categoria",
+        "elecciones:categoria_crear": "elecciones.add_categoria",
+        "elecciones:categoria_editar": "elecciones.change_categoria",
+        "elecciones:categoria_estado": "elecciones.change_categoria",
+        "elecciones:categorias_copiar": "elecciones.add_categoria",
+        "elecciones:votaciones_lista": "elecciones.view_votacion",
+        "elecciones:votacion_crear": "elecciones.add_votacion",
+        "elecciones:votacion_editar": "elecciones.change_votacion",
+        "elecciones:votacion_publicacion": "elecciones.publicar_votacion",
+        "elecciones:votacion_estado": "elecciones.operar_votacion",
+        "elecciones:resultados_lista": "elecciones.view_voto",
+        "elecciones:resultado_detalle_admin": "elecciones.view_voto",
+        "elecciones:publicar_resultado": "elecciones.add_publicacionresultado",
+        "elecciones:retirar_resultado": "elecciones.change_publicacionresultado",
+        "elecciones:auditoria_lista": "elecciones.view_eventoauditoria",
     }
 
     def __init__(self, get_response):
         self.get_response = get_response
 
+    @classmethod
+    def _has_administrative_role(cls, user):
+        if user.is_superuser:
+            return True
+        return user.groups.filter(name__in=cls.ADMINISTRATIVE_GROUPS).exists()
+
     def __call__(self, request):
+        if not request.path_info.startswith("/administracion/"):
+            return self.get_response(request)
+
+        if not request.user.is_authenticated:
+            return redirect_to_login(request.get_full_path())
+
+        if not self._has_administrative_role(request.user):
+            raise PermissionDenied(
+                "La cuenta no tiene un rol administrativo asignado."
+            )
+
         match = resolve(request.path_info)
         permission = self.ROUTE_PERMISSIONS.get(match.view_name)
-        if permission:
-            if not request.user.is_authenticated:
-                return redirect(f"{reverse('login')}?next={request.get_full_path()}")
-            if not request.user.is_superuser and not request.user.has_perm(permission):
-                messages.error(request, 'No cuenta con permisos para realizar esta operación.')
-                return redirect('elecciones:panel')
+        if (
+            permission
+            and not request.user.is_superuser
+            and not request.user.has_perm(permission)
+        ):
+            raise PermissionDenied(
+                "La cuenta no tiene permiso para esta operacion."
+            )
+
         return self.get_response(request)

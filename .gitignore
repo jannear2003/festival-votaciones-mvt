@@ -8,3 +8,5 @@ media/
 staticfiles/
 .pytest_cache/
 .coverage
+
+.env.mysql

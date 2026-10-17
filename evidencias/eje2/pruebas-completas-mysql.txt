@@ -1,0 +1,51 @@
+Creating test database for alias 'default'...
+..........................
+----------------------------------------------------------------------
+Ran 26 tests in 14.207s
+
+OK
+Destroying test database for alias 'default'...
+Found 26 test(s).
+System check identified no issues (0 silenced).
+Administrador general: 42 permisos configurados.
+Configurador: 14 permisos configurados.
+Operador: 7 permisos configurados.
+Publicador: 9 permisos configurados.
+Auditor: 10 permisos configurados.
+Roles y permisos separados correctamente.
+Administrador general: 42 permisos configurados.
+Configurador: 14 permisos configurados.
+Operador: 7 permisos configurados.
+Publicador: 9 permisos configurados.
+Auditor: 10 permisos configurados.
+Roles y permisos separados correctamente.
+Administrador general: 42 permisos configurados.
+Configurador: 14 permisos configurados.
+Operador: 7 permisos configurados.
+Publicador: 9 permisos configurados.
+Auditor: 10 permisos configurados.
+Roles y permisos separados correctamente.
+Administrador general: 42 permisos configurados.
+Configurador: 14 permisos configurados.
+Operador: 7 permisos configurados.
+Publicador: 9 permisos configurados.
+Auditor: 10 permisos configurados.
+Roles y permisos separados correctamente.
+Administrador general: 42 permisos configurados.
+Configurador: 14 permisos configurados.
+Operador: 7 permisos configurados.
+Publicador: 9 permisos configurados.
+Auditor: 10 permisos configurados.
+Roles y permisos separados correctamente.
+Administrador general: 42 permisos configurados.
+Configurador: 14 permisos configurados.
+Operador: 7 permisos configurados.
+Publicador: 9 permisos configurados.
+Auditor: 10 permisos configurados.
+Roles y permisos separados correctamente.
+Administrador general: 42 permisos configurados.
+Configurador: 14 permisos configurados.
+Operador: 7 permisos configurados.
+Publicador: 9 permisos configurados.
+Auditor: 10 permisos configurados.
+Roles y permisos separados correctamente.

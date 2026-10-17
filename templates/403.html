@@ -1,13 +1,9 @@
-{% extends 'base.html' %}
-{% block title %}Acceso no autorizado{% endblock %}
+{% extends "base.html" %}
+{% block title %}Acceso denegado{% endblock %}
 {% block content %}
-<section class="card access-denied" aria-labelledby="titulo-denegado">
-    <p class="eyebrow dark">Autorización</p>
-    <h1 id="titulo-denegado">Acceso no autorizado</h1>
-    <p>La cuenta autenticada no cuenta con los permisos necesarios para ejecutar esta operación.</p>
-    <div class="actions">
-        <a class="btn" href="{% url 'elecciones:panel' %}">Volver al panel</a>
-        <a class="btn alt" href="{% url 'elecciones:inicio' %}">Ir al portal público</a>
-    </div>
+<section class="card">
+  <h1>Acceso denegado</h1>
+  <p>La cuenta no tiene permisos para acceder a esta sección.</p>
+  <a class="btn" href="{% url 'elecciones:inicio' %}">Volver al portal público</a>
 </section>
 {% endblock %}
