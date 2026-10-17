@@ -1,0 +1,5 @@
+22 objects imported automatically (use -v 2 for details).
+
+Proveedor: mysql
+Version: 8.4.11
+Base: festival_votaciones
