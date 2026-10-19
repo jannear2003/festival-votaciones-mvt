@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'elecciones',
+    'participantes.apps.ParticipantesConfig',
 ]
 
 MIDDLEWARE = [
