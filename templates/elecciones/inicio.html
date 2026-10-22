@@ -1,12 +1,115 @@
-{% extends 'base.html' %}{% block title %}Votaciones disponibles{% endblock %}{% block content %}
+{% extends "base.html" %}
 {% load static categoria_visual %}
-<section class="hero"><p class="eyebrow">Sistema web configurable</p><h1>{% if edicion %}{{ edicion.nombre }}{% else %}Festival de la Leyenda Vallenata{% endif %}</h1><p>Consulta las votaciones publicadas para la edición activa.</p></section>
-<section><h2>Votaciones disponibles</h2><div class="grid">{% for v in votaciones %}<article class="card vote-card">
-{% with ruta_imagen=v.categoria|categoria_imagen %}
-{% with ruta_imagen=v.categoria|categoria_imagen %}
-<div class="vote-card__image">
-  <img src="{% static ruta_imagen %}" alt="" loading="lazy" width="1200" height="800">
-</div>
-{% endwith %}
-{% endwith %}<span class="badge">{{ v.get_estado_display }}</span><p class="category">{{ v.categoria.nombre }} · {{ v.tipo.nombre }}</p><h3>{{ v.nombre }}</h3><p>{{ v.descripcion|truncatewords:25 }}</p><p><strong>{{ v.total_opciones }}</strong> opciones disponibles</p><a class="btn" href="{{ v.get_absolute_url }}">Consultar</a></article>{% empty %}<div class="empty"><h3>No hay votaciones publicadas</h3><p>La administración puede configurar ediciones, categorías y votaciones sin modificar el código.</p></div>{% endfor %}</div></section>
+
+{% block title %}Votaciones disponibles{% endblock %}
+
+{% block content %}
+<section class="hero visual-hero">
+  <div class="visual-hero__content">
+    <p class="eyebrow">
+      Sistema web configurable
+    </p>
+
+    <h1>
+      {% if edicion %}
+        {{ edicion.nombre }}
+      {% else %}
+        Festival de la Leyenda Vallenata
+      {% endif %}
+    </h1>
+
+    <p class="visual-hero__description">
+      Consulta las votaciones publicadas para la edición activa
+      y descubre las categorías que mantienen viva la tradición.
+    </p>
+
+    {% if user.is_authenticated %}
+      <a class="btn" href="#votaciones">
+        Explorar votaciones
+      </a>
+    {% else %}
+      <div class="actions">
+        <a class="btn" href="{% url 'elecciones:registro' %}">
+          Crear cuenta
+        </a>
+
+        <a class="btn alt" href="{% url 'login' %}">
+          Iniciar sesión
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<section
+  id="votaciones"
+  aria-labelledby="titulo-votaciones"
+>
+  <header class="visual-section-heading">
+    <p class="eyebrow dark">
+      Participación cultural
+    </p>
+
+    <h2 id="titulo-votaciones">
+      Votaciones disponibles
+    </h2>
+
+    <p>
+      Las opciones se recuperan dinámicamente desde
+      la edición activa y la base de datos.
+    </p>
+  </header>
+
+  <div class="grid">
+    {% for v in votaciones %}
+      <article class="card vote-card">
+        {% with ruta_imagen=v.categoria|categoria_imagen %}
+          <div class="vote-card__image">
+            <img
+              src="{% static ruta_imagen %}"
+              alt="Imagen representativa de {{ v.categoria.nombre }}"
+              loading="lazy"
+              width="1200"
+              height="800"
+            >
+          </div>
+        {% endwith %}
+
+        <span class="badge">
+          {{ v.get_estado_display }}
+        </span>
+
+        <p class="category">
+          {{ v.categoria.nombre }} · {{ v.tipo.nombre }}
+        </p>
+
+        <h3>
+          {{ v.nombre }}
+        </h3>
+
+        <p>
+          {{ v.descripcion|truncatewords:25 }}
+        </p>
+
+        <p>
+          <strong>{{ v.total_opciones }}</strong>
+          opciones disponibles
+        </p>
+
+        <a class="btn" href="{{ v.get_absolute_url }}">
+          Consultar
+        </a>
+      </article>
+    {% empty %}
+      <div class="empty">
+        <h3>No hay votaciones publicadas</h3>
+
+        <p>
+          La administración puede configurar ediciones,
+          categorías y votaciones sin modificar el código.
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
 {% endblock %}
