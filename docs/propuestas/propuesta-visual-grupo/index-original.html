@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#250806">
+  <meta name="description" content="Una propuesta visual vallenata con efectos musicales interactivos.">
+  <title>La tradición vive — Laboratorio vallenato</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#inicio" aria-label="Festival de la Leyenda Vallenata, inicio"><span class="brand-mark">✳</span> Festival de la Leyenda Vallenata</a>
+    <nav class="top-nav" aria-label="Navegación principal">
+      <a href="#laboratorio">Laboratorio</a><a href="#identidad">Identidad</a><a href="#historias">Historias</a>
+    </nav>
+    <a class="admin-link" href="#controles"><span aria-hidden="true">♙</span> Administración</a>
+  </header>
+
+  <div class="layout" id="inicio">
+    <main class="main-column">
+      <section class="hero" aria-labelledby="heroTitle">
+        <div class="hero-art" aria-hidden="true">
+          <div class="sun"></div><div class="mountain mountain-back"></div><div class="mountain mountain-front"></div>
+          <div class="star-field">✦　 ·　✧　　　 ✦　　·　✧</div>
+          <div class="accordion-art"><div class="acc-side"></div><div class="acc-center"><i></i><i></i><i></i><i></i><i></i></div><div class="acc-side"></div></div>
+          <div class="art-flower flower-one">✿</div><div class="art-flower flower-two">✿</div>
+          <div class="art-label">CESAR · COLOMBIA</div>
+        </div>
+        <div class="hero-shade"></div>
+        <div class="hero-copy">
+          <p class="hero-kicker"><span>✦</span> PROTOTIPO ACADÉMICO NAVEGABLE · VERSIÓN 1.3</p>
+          <h1 id="heroTitle">La tradición vive<br>y el ritmo <em>nos une</em></h1>
+          <p class="hero-description">Una experiencia para celebrar las historias, los sonidos y la identidad del vallenato.</p>
+          <div class="hero-actions"><a class="button button-light" href="#laboratorio">Explorar la propuesta <span>↓</span></a><button class="button button-outline" id="demoButton" type="button">♪ Ver los efectos</button></div>
+        </div>
+        <div class="hero-index"><span>01</span> / UNA CULTURA QUE SE SIENTE</div>
+      </section>
+
+      <section class="quick-stats" aria-label="Resumen de la propuesta">
+        <article><span class="stat-icon">♫</span><span><strong>4</strong><small>aires del vallenato</small></span></article>
+        <article><span class="stat-icon">✧</span><span><strong>1</strong><small>identidad que nos une</small></span></article>
+        <article><span class="stat-icon">◉</span><span><strong>∞</strong><small>historias por contar</small></span></article>
+      </section>
+
+      <section class="intro-strip" id="identidad">
+        <div><p class="section-label">UNA IDENTIDAD CON RAÍCES</p><h2>El vallenato también<br>se vive con los ojos.</h2></div>
+        <p>Color, memoria y movimiento se encuentran en una propuesta digital inspirada en el Festival de la Leyenda Vallenata y la riqueza del Caribe colombiano.</p>
+      </section>
+
+      <section class="lab-section" id="laboratorio" aria-labelledby="labTitle">
+        <div class="section-heading"><div><p class="section-label">PARTICIPA · EXPERIMENTA</p><h2 id="labTitle">Deja que el ritmo te siga</h2></div><span class="live-badge"><i></i> EXPERIENCIA INTERACTIVA</span></div>
+        <p class="section-deck">Mueve el cursor sobre el escenario o pulsa para soltar una lluvia de notas. Tu recorrido dibuja la música.</p>
+        <div class="stage" id="stage" aria-label="Escenario interactivo: mueve el cursor o pulsa para crear efectos musicales" tabindex="0">
+          <div class="stage-orbit orbit-one"></div><div class="stage-orbit orbit-two"></div>
+          <div class="stage-center" aria-hidden="true"><div class="stage-note">♫</div><span>EL RITMO LO PONES TÚ</span><strong>Prueba la estela<br>y hazla sonar</strong><small>Mueve y pulsa sobre el escenario</small></div>
+          <div class="stage-hint"><span>✦</span> TU LIENZO MUSICAL</div>
+          <div class="status" aria-live="polite"><span class="status-dot" id="statusDot"></span><span id="statusText">Estela y explosiones activas</span></div>
+        </div>
+        <section class="controls" id="controles" aria-label="Personaliza los efectos">
+          <div class="control-head"><div><p class="section-label">A TU MANERA</p><h3>Personaliza la experiencia</h3></div><button class="clear-button" id="clearButton" type="button"><span aria-hidden="true">↺</span> Limpiar</button></div>
+          <div class="control-grid">
+            <label class="toggle-row" for="trailToggle"><span class="control-icon trail-icon">〰</span><span class="control-copy"><strong>Estela del cursor</strong><small>Notas que siguen tu recorrido</small></span><input class="switch" id="trailToggle" type="checkbox" checked></label>
+            <label class="toggle-row" for="burstToggle"><span class="control-icon burst-icon">✳</span><span class="control-copy"><strong>Explosiones</strong><small>Notas que nacen al pulsar</small></span><input class="switch" id="burstToggle" type="checkbox" checked></label>
+            <label class="slider-row" for="intensity"><span class="control-copy"><strong>Intensidad de la estela</strong><small>Frecuencia de aparición</small></span><span class="slider-value" id="intensityValue">Media</span><input id="intensity" type="range" min="1" max="3" value="2" step="1" aria-label="Intensidad de la estela"></label>
+            <label class="color-row" for="particleColor"><span class="control-copy"><strong>Color de las notas</strong><small>Elige el tono del efecto</small></span><input id="particleColor" type="color" value="#f3c969" aria-label="Color de las partículas"></label>
+          </div>
+        </section>
+      </section>
+
+      <section class="stories" id="historias">
+        <div class="section-heading"><div><p class="section-label">EL FOLCLOR NOS CUENTA</p><h2>Una cultura, muchos matices</h2></div><a href="#inicio" class="text-link">Volver arriba ↑</a></div>
+        <div class="story-grid">
+          <article class="story-card story-red"><span class="story-symbol">♬</span><div><small>EL SONIDO</small><h3>Cuatro aires,<br>un mismo corazón</h3><p>Paseo, merengue, son y puya: un paisaje musical que nos identifica.</p></div><span class="story-arrow">↗</span></article>
+          <article class="story-card story-gold"><span class="story-symbol">✿</span><div><small>LA MEMORIA</small><h3>Relatos que<br>pasan de voz en voz</h3><p>Crónicas, encuentros y canciones que mantienen viva la tradición.</p></div><span class="story-arrow">↗</span></article>
+          <article class="story-card story-green"><span class="story-symbol">✧</span><div><small>EL ENCUENTRO</small><h3>Una fiesta para<br>compartir</h3><p>La celebración se transforma cuando todos hacemos parte de ella.</p></div><span class="story-arrow">↗</span></article>
+        </div>
+      </section>
+      <footer class="main-footer"><span>FESTIVAL DE LA LEYENDA VALLENATA</span><span>Prototipo visual · Sin audio, solo movimiento</span></footer>
+    </main>
+
+    <aside class="sidebar" aria-label="Novedades y notas culturales">
+      <div class="side-top"><span class="side-spark">✳</span><span>CUADERNO<br>DEL FESTIVAL</span></div>
+      <p class="section-label">PARA LEER DESPACIO</p>
+      <h2>El acordeón<br>guarda historias.</h2>
+      <p class="side-intro">Cada canción lleva un pedacito de nuestra tierra, de sus caminos y de quienes la habitan.</p>
+      <div class="side-divider"></div>
+      <article class="side-story"><div class="side-art side-art-one"><span>♫</span></div><small>TRADICIÓN · 4 MIN</small><h3>La voz que viaja con el viento</h3><p>Un encuentro entre la poesía popular y el paisaje del Caribe.</p><a href="#identidad">Conocer la propuesta <span>→</span></a></article>
+      <article class="side-story"><div class="side-art side-art-two"><span>✿</span></div><small>FESTIVAL · 3 MIN</small><h3>Donde comienza la parranda</h3><p>Celebrar juntos también es una forma de mantener viva la memoria.</p><a href="#historias">Leer la historia <span>→</span></a></article>
+      <div class="side-quote"><span>“</span><p>La música es el recuerdo que todos podemos cantar.</p><small>— UNA VOZ DEL VALLE</small></div>
+      <div class="newsletter"><span>✧</span><h3>El folclor<br>siempre encuentra<br>su camino.</h3><a href="#laboratorio">Vivir la experiencia ↗</a></div>
+      <div class="side-footer"><b>FLV <span>✳</span></b><small>Valledupar, Cesar<br>Colombia · Cultura viva</small></div>
+    </aside>
+  </div>
+</body>
+</html>
+
