@@ -1,0 +1,36 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | Festival de la Leyenda Vallenata{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/festival-liquid-glass.css' %}">
+  <link rel="stylesheet" href="{% static 'css/admin-liquid-glass.css' %}">
+{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script src="{% static 'js/estela-festival.js' %}" defer></script>
+{% endblock %}
+
+{% block branding %}
+  <div id="branding" class="festival-admin-branding">
+    <details class="trail-settings">
+      <summary aria-label="Ajustes de la estela musical" title="Ajustes de la estela">⚙</summary>
+      <div class="trail-settings__panel" aria-label="Ajustes de la estela musical">
+        <strong>Estela musical</strong>
+        <label class="trail-settings__toggle">
+          <input id="festivalTrailEnabled" type="checkbox" checked>
+          <span>Activar efecto</span>
+        </label>
+        <label class="trail-settings__intensity" for="festivalTrailIntensity">
+          <span>Intensidad</span>
+          <output id="festivalTrailValue" for="festivalTrailIntensity">Media</output>
+          <input id="festivalTrailIntensity" type="range" min="1" max="3" value="2" step="1">
+        </label>
+      </div>
+    </details>
+    <h1 id="site-name"><a href="{% url 'admin:index' %}">Festival de la Leyenda Vallenata</a></h1>
+  </div>
+{% endblock %}

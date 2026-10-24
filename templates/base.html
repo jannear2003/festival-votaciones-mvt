@@ -1,4 +1,4 @@
-{% load static %}
+{% load static admin_access %}
 <!doctype html>
 <html lang="es">
 <head>
@@ -21,6 +21,11 @@
     rel="stylesheet"
     href="{% static 'css/propuesta-visual.css' %}"
   >
+  <link
+    rel="stylesheet"
+    href="{% static 'css/festival-liquid-glass.css' %}?v=4"
+  >
+  <script src="{% static 'js/estela-festival.js' %}?v=2" defer></script>
 </head>
 
 <body>
@@ -29,6 +34,21 @@
   </a>
 
   <header class="top">
+    <details class="trail-settings">
+      <summary aria-label="Ajustes de la estela musical" title="Ajustes de la estela">⚙</summary>
+      <div class="trail-settings__panel" aria-label="Ajustes de la estela musical">
+        <strong>Estela musical</strong>
+        <label class="trail-settings__toggle">
+          <input id="festivalTrailEnabled" type="checkbox" checked>
+          <span>Activar efecto</span>
+        </label>
+        <label class="trail-settings__intensity" for="festivalTrailIntensity">
+          <span>Intensidad</span>
+          <output id="festivalTrailValue" for="festivalTrailIntensity">Media</output>
+          <input id="festivalTrailIntensity" type="range" min="1" max="3" value="2" step="1">
+        </label>
+      </div>
+    </details>
     <a
       class="brand"
       href="{% url 'elecciones:inicio' %}"
@@ -38,13 +58,13 @@
 
     <nav aria-label="Navegación principal">
       {% if user.is_authenticated %}
-        {% if user.is_superuser or perms.elecciones.view_categoria or perms.elecciones.view_votacion or perms.elecciones.view_voto or perms.elecciones.view_eventoauditoria %}
+        {% if user|has_admin_access %}
           <a href="{% url 'elecciones:panel' %}">
-            Panel
+            Administración
           </a>
         {% endif %}
 
-        {% if user.is_staff %}
+        {% if user.is_staff and user|has_admin_access %}
           <a href="/admin/">
             Django Admin
           </a>
