@@ -27,8 +27,12 @@ class RolePermissionMiddleware:
         "elecciones:votacion_estado": "elecciones.operar_votacion",
         "elecciones:resultados_lista": "elecciones.view_voto",
         "elecciones:resultado_detalle_admin": "elecciones.view_voto",
-        "elecciones:publicar_resultado": "elecciones.add_publicacionresultado",
-        "elecciones:retirar_resultado": "elecciones.change_publicacionresultado",
+        "elecciones:publicar_resultado": (
+            "elecciones.add_publicacionresultado"
+        ),
+        "elecciones:retirar_resultado": (
+            "elecciones.change_publicacionresultado"
+        ),
         "elecciones:auditoria_lista": "elecciones.view_eventoauditoria",
     }
 
@@ -39,14 +43,28 @@ class RolePermissionMiddleware:
     def _has_administrative_role(cls, user):
         if user.is_superuser:
             return True
-        return user.groups.filter(name__in=cls.ADMINISTRATIVE_GROUPS).exists()
+
+        return user.groups.filter(
+            name__in=cls.ADMINISTRATIVE_GROUPS
+        ).exists()
 
     def __call__(self, request):
-        if not request.path_info.startswith("/administracion/"):
+        ruta_django_admin = request.path_info.startswith("/admin/")
+
+        if ruta_django_admin:
+            return self.get_response(request)
+
+        ruta_administrativa = request.path_info.startswith(
+            "/administracion/"
+        )
+
+        if not ruta_administrativa:
             return self.get_response(request)
 
         if not request.user.is_authenticated:
-            return redirect_to_login(request.get_full_path())
+            return redirect_to_login(
+                request.get_full_path()
+            )
 
         if not self._has_administrative_role(request.user):
             raise PermissionDenied(
@@ -54,14 +72,17 @@ class RolePermissionMiddleware:
             )
 
         match = resolve(request.path_info)
-        permission = self.ROUTE_PERMISSIONS.get(match.view_name)
+        permission = self.ROUTE_PERMISSIONS.get(
+            match.view_name
+        )
+
         if (
             permission
             and not request.user.is_superuser
             and not request.user.has_perm(permission)
         ):
             raise PermissionDenied(
-                "La cuenta no tiene permiso para esta operacion."
+                "La cuenta no tiene permiso para esta operación."
             )
 
         return self.get_response(request)

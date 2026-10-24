@@ -13,7 +13,7 @@
     <div>
         <p class="eyebrow dark">Configuración y operación</p>
         <h1>Gestión de votaciones</h1>
-        <p>Consulta, configura y opera las votaciones de las distintas ediciones.</p>
+        <p>Consulta y opera las votaciones. Usa “Editar fechas y opciones” para ajustar cuándo abren y cierran; los horarios están en hora de Colombia.</p>
     </div>
 
     {% if perms.elecciones.add_votacion %}
@@ -80,7 +80,7 @@
         <div>
             <div class="item-title">
                 <h2>{{ v.nombre }}</h2>
-                <span class="mini-badge state-{{ v.estado|lower }}">{{ v.get_estado_display }}</span>
+                <span class="mini-badge state-{{ v.estado_efectivo|lower }}">{{ v.estado_efectivo_display }}</span>
                 {% if v.publicada %}
                 <span class="mini-badge">Publicada</span>
                 {% else %}
@@ -95,15 +95,15 @@
             </p>
 
             <p>
-                {{ v.fecha_apertura|date:'d/m/Y H:i' }} a
-                {{ v.fecha_cierre|date:'d/m/Y H:i' }} ·
+            {{ v.fecha_apertura|date:'d/m/Y H:i' }} a
+                {{ v.fecha_cierre|date:'d/m/Y H:i' }} · Hora de Colombia ·
                 {{ v.total_opciones }} opción(es)
             </p>
         </div>
 
         <div class="item-actions">
             {% if perms.elecciones.change_votacion %}
-            <a class="btn alt" href="{% url 'elecciones:votacion_editar' v.pk %}">Editar</a>
+            <a class="btn alt" href="{% url 'elecciones:votacion_editar' v.pk %}">Editar fechas y opciones</a>
             {% endif %}
 
             {% if perms.elecciones.publicar_votacion %}

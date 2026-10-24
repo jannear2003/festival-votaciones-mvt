@@ -5,7 +5,7 @@ body{margin:0;font-family:Arial,sans-serif;background:#f8f3e9;color:var(--texto)
 .top{display:flex;justify-content:space-between;align-items:center;padding:14px max(20px,calc((100% - 1120px)/2));background:#fff;border-bottom:1px solid #dbcbb7}
 .brand{font-weight:900;color:var(--oscuro);text-decoration:none}.top nav{display:flex;gap:14px;align-items:center}.top nav a{color:var(--azul);font-weight:700}.top form{margin:0}.top button{border:0;background:transparent;color:var(--vino);font-weight:700;cursor:pointer}
 .container{max-width:1120px;margin:auto;padding:28px 18px;min-height:78vh}
-.hero{padding:48px;border-radius:26px;color:#fff;background:linear-gradient(135deg,rgba(69,16,13,.96),rgba(120,25,20,.86)),url('/static/images/festival.jpg') center/cover}
+.hero{padding:48px;border-radius:26px;color:#fff;background:linear-gradient(135deg,rgba(69,16,13,.96),rgba(120,25,20,.86)),url('/static/images/festival-hero.webp') center/cover}
 .hero h1{font-family:Georgia,serif;font-size:clamp(2rem,5vw,3.7rem);margin:.2em 0}
 .eyebrow{text-transform:uppercase;letter-spacing:.1em;font-weight:900;color:#ffe0a1}.eyebrow.dark{color:var(--vino)}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:#fff;border:1px solid #dfcfba;border-radius:18px;padding:20px;box-shadow:0 10px 24px rgba(60,30,20,.08)}

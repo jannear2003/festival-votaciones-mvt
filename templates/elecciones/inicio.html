@@ -1,115 +1,99 @@
 {% extends "base.html" %}
 {% load static categoria_visual %}
 
-{% block title %}Votaciones disponibles{% endblock %}
+{% block title %}Festival de la Leyenda Vallenata · Votaciones{% endblock %}
 
 {% block content %}
-<section class="hero visual-hero">
-  <div class="visual-hero__content">
-    <p class="eyebrow">
-      Sistema web configurable
-    </p>
-
-    <h1>
-      {% if edicion %}
-        {{ edicion.nombre }}
-      {% else %}
-        Festival de la Leyenda Vallenata
-      {% endif %}
-    </h1>
-
-    <p class="visual-hero__description">
-      Consulta las votaciones publicadas para la edición activa
-      y descubre las categorías que mantienen viva la tradición.
-    </p>
-
-    {% if user.is_authenticated %}
-      <a class="btn" href="#votaciones">
-        Explorar votaciones
-      </a>
-    {% else %}
-      <div class="actions">
-        <a class="btn" href="{% url 'elecciones:registro' %}">
-          Crear cuenta
-        </a>
-
-        <a class="btn alt" href="{% url 'login' %}">
-          Iniciar sesión
-        </a>
+<div class="festival-home">
+  <main class="festival-home__main">
+    <section class="hero visual-hero festival-hero" aria-labelledby="festival-title">
+      <div class="festival-hero__content visual-hero__content">
+        <p class="eyebrow">CESAR · COLOMBIA{% if edicion %} · {{ edicion.anio }}{% endif %}</p>
+        <h1 id="festival-title">
+          {% if edicion %}{{ edicion.nombre }}{% else %}Festival de la Leyenda Vallenata{% endif %}
+        </h1>
+        <p class="visual-hero__description">
+          El vallenato nos reúne. Explora las votaciones de esta edición y participa en la celebración.
+        </p>
+        <div class="actions">
+          <a class="btn" href="#votaciones">Ver las votaciones <span aria-hidden="true">↓</span></a>
+          {% if not user.is_authenticated %}
+            <a class="btn alt" href="{% url 'login' %}">Iniciar sesión</a>
+          {% endif %}
+        </div>
       </div>
-    {% endif %}
-  </div>
-</section>
+      <span class="festival-hero__caption">UNA CULTURA QUE SE SIENTE</span>
+    </section>
 
-<section
-  id="votaciones"
-  aria-labelledby="titulo-votaciones"
->
-  <header class="visual-section-heading">
-    <p class="eyebrow dark">
-      Participación cultural
-    </p>
+    <section class="festival-intro" aria-label="Edición actual">
+      <div><span class="festival-intro__mark">♫</span><p>MEMORIA · MÚSICA · ENCUENTRO</p></div>
+      <p>Una tradición que vive en sus canciones, en sus acordeones y en quienes la celebran juntos.</p>
+    </section>
 
-    <h2 id="titulo-votaciones">
-      Votaciones disponibles
-    </h2>
+    <section class="voting-section" id="votaciones" aria-labelledby="titulo-votaciones">
+      <header class="voting-section__heading">
+        <div>
+          <p class="eyebrow dark">PARTICIPA · CELEBRA</p>
+          <h2 id="titulo-votaciones">Votaciones del festival</h2>
+          <p>Consulta su estado real según las fechas y conoce las categorías y opciones de esta edición.</p>
+        </div>
+        <div class="voting-section__count" aria-label="Cantidad de votaciones">
+          <strong>{{ votaciones|length }}</strong><span>ENCUENTROS<br>PARA ELEGIR</span>
+        </div>
+      </header>
 
-    <p>
-      Las opciones se recuperan dinámicamente desde
-      la edición activa y la base de datos.
-    </p>
-  </header>
-
-  <div class="grid">
-    {% for v in votaciones %}
-      <article class="card vote-card">
-        {% with ruta_imagen=v.categoria|categoria_imagen %}
-          <div class="vote-card__image">
-            <img
-              src="{% static ruta_imagen %}"
-              alt="Imagen representativa de {{ v.categoria.nombre }}"
-              loading="lazy"
-              width="1200"
-              height="800"
-            >
+      <div class="voting-list">
+        {% for v in votaciones %}
+          {% with ruta_imagen=v.categoria|categoria_imagen %}
+            <article class="voting-entry">
+              <a class="voting-entry__art" href="{{ v.get_absolute_url }}" aria-label="Consultar {{ v.nombre }}">
+                <img src="{% static ruta_imagen %}" alt="" loading="lazy" width="1200" height="800">
+                <span aria-hidden="true">↗</span>
+              </a>
+              <div class="voting-entry__copy">
+                <div class="voting-entry__meta">
+                  <span>{{ v.categoria.nombre }}</span><i aria-hidden="true">·</i><span>{{ v.estado_efectivo_display }}</span>
+                </div>
+                <h3><a href="{{ v.get_absolute_url }}">{{ v.nombre }}</a></h3>
+                <p>{{ v.descripcion|truncatewords:25 }}</p>
+                <div class="voting-entry__foot">
+                  <span>{{ v.total_opciones }} opciones</span>
+                  <a href="{{ v.get_absolute_url }}">Conocer la votación <span aria-hidden="true">→</span></a>
+                </div>
+              </div>
+            </article>
+          {% endwith %}
+        {% empty %}
+          <div class="voting-empty">
+            <span aria-hidden="true">✧</span>
+            <h3>Pronto habrá nuevas votaciones</h3>
+            <p>Las categorías de la próxima edición aparecerán aquí.</p>
           </div>
-        {% endwith %}
-
-        <span class="badge">
-          {{ v.get_estado_display }}
-        </span>
-
-        <p class="category">
-          {{ v.categoria.nombre }} · {{ v.tipo.nombre }}
-        </p>
-
-        <h3>
-          {{ v.nombre }}
-        </h3>
-
-        <p>
-          {{ v.descripcion|truncatewords:25 }}
-        </p>
-
-        <p>
-          <strong>{{ v.total_opciones }}</strong>
-          opciones disponibles
-        </p>
-
-        <a class="btn" href="{{ v.get_absolute_url }}">
-          Consultar
-        </a>
-      </article>
-    {% empty %}
-      <div class="empty">
-        <h3>No hay votaciones publicadas</h3>
-
-        <p>
-          La administración puede configurar ediciones,
-          categorías y votaciones sin modificar el código.
-        </p>
+        {% endfor %}
       </div>
-    {% endfor %}
-  </div>
-</section>
+    </section>
+    <p class="festival-home__signature">FESTIVAL DE LA LEYENDA VALLENATA <span>✳</span> VALLEDUPAR, CESAR</p>
+  </main>
+
+  <aside class="festival-aside" aria-label="Detalles de la edición">
+    <div class="festival-aside__brand"><span>✳</span><small>CUADERNO<br>DEL FESTIVAL</small></div>
+    <p class="eyebrow dark">LA EDICIÓN</p>
+    <h2>{% if edicion %}{{ edicion.nombre }}{% else %}La tradición sigue viva{% endif %}</h2>
+    {% if edicion %}
+      <p class="festival-aside__date">{{ edicion.fecha_inicio|date:"j \d\e F" }} — {{ edicion.fecha_fin|date:"j \d\e F \d\e Y" }}</p>
+    {% endif %}
+    <div class="festival-aside__rule"></div>
+    <p class="festival-aside__note">Cuatro aires, miles de historias y un mismo sentimiento que vuelve a encontrarnos.</p>
+    <div class="festival-aside__quote"><span>“</span><p>La música es el recuerdo que todos podemos cantar.</p><small>VALLEDUPAR · CESAR</small></div>
+    <div class="festival-aside__bottom">
+      <span class="festival-aside__symbol" aria-hidden="true">♫</span>
+      <p>Vive la fiesta.<br><em>Haz parte de ella.</em></p>
+      {% if not user.is_authenticated %}
+        <a href="{% url 'elecciones:registro' %}">Crear una cuenta <span aria-hidden="true">↗</span></a>
+      {% else %}
+        <a href="#votaciones">Explorar votaciones <span aria-hidden="true">↗</span></a>
+      {% endif %}
+    </div>
+  </aside>
+</div>
 {% endblock %}

@@ -10,6 +10,6 @@
     {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
     <button class="btn" type="submit">Ingresar</button>
   </form>
-  <p>No tiene una cuenta? <a href="{% url 'elecciones:registro' %}">Registrarse</a></p>
+  <p>El registro público no concede acceso administrativo. El panel solo está disponible para cuentas con rol autorizado.</p>
 </section>
 {% endblock %}
