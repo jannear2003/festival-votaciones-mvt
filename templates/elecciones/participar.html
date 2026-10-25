@@ -1,1 +1,114 @@
-{% extends 'base.html' %}{% block title %}Participar{% endblock %}{% block content %}<nav class="crumb"><a href="{% url 'elecciones:inicio' %}">Inicio</a> / Participar</nav><section class="form-card card"><p class="eyebrow dark">Paso 1 de 3</p><h1>Seleccione una opción</h1><p>{{ votacion.nombre }}</p><div class="notice"><strong>Regla de participación:</strong> cada cuenta puede registrar un voto por votación.</div><form method="post">{% csrf_token %}<div class="vote-options">{% for radio in form.opcion %}<label class="vote-option">{{ radio.tag }}<span><strong>{{ radio.choice_label }}</strong></span></label>{% endfor %}</div>{% for error in form.opcion.errors %}<p class="field-error">{{ error }}</p>{% endfor %}<div class="actions"><button class="btn" type="submit">Revisar selección</button><a class="btn alt" href="{% url 'elecciones:detalle' votacion.slug %}">Cancelar</a></div></form></section>{% endblock %}
+{% extends 'base.html' %}
+
+{% block title %}Participar{% endblock %}
+
+{% block content %}
+  <nav class="crumb">
+    <a href="{% url 'elecciones:inicio' %}">Inicio</a>
+    /
+    <a href="{% url 'elecciones:detalle' votacion.slug %}">
+      {{ votacion.nombre }}
+    </a>
+    /
+    Participar
+  </nav>
+
+  <section class="form-card card vote-selection">
+    <p class="eyebrow dark">Paso 1 de 3</p>
+
+    <h1>Seleccione una opción</h1>
+
+    <p class="vote-selection__intro">
+      {{ votacion.nombre }}
+    </p>
+
+    <div class="notice">
+      <strong>Regla de participación:</strong>
+      cada cuenta puede registrar un voto por votación.
+      Revise cuidadosamente su selección antes de continuar.
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <fieldset class="vote-fieldset">
+        <legend>{{ form.opcion.label }}</legend>
+
+        <div class="vote-options">
+          {% for radio, opcion in opciones_visuales %}
+            <label
+              class="vote-option"
+              for="{{ radio.id_for_label }}"
+            >
+              {{ radio.tag }}
+
+              <span class="vote-option__visual">
+                {% if opcion.imagen %}
+                  <img
+                    src="{{ opcion.imagen.url }}"
+                    class="vote-option__image js-option-image"
+                    alt=""
+                    loading="lazy"
+                    width="900"
+                    height="600"
+                  >
+                {% else %}
+                  <span
+                    class="vote-option__placeholder"
+                    aria-hidden="true"
+                  >
+                    <span>{{ opcion.nombre|slice:":1" }}</span>
+                  </span>
+                {% endif %}
+              </span>
+
+              <span class="vote-option__content">
+                <strong class="vote-option__title">
+                  {{ opcion.nombre }}
+                </strong>
+
+                {% if opcion.descripcion %}
+                  <span class="vote-option__description">
+                    {{ opcion.descripcion }}
+                  </span>
+                {% else %}
+                  <span class="vote-option__description">
+                    Opción disponible para esta votación.
+                  </span>
+                {% endif %}
+              </span>
+
+              <span
+                class="vote-option__indicator"
+                aria-hidden="true"
+              ></span>
+            </label>
+          {% empty %}
+            <p class="empty">
+              No hay opciones activas disponibles.
+            </p>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      {% for error in form.opcion.errors %}
+        <p class="field-error" role="alert">
+          {{ error }}
+        </p>
+      {% endfor %}
+
+      <div class="actions vote-selection__actions">
+        <button class="btn" type="submit">
+          Revisar selección
+        </button>
+
+        <a
+          class="btn alt"
+          href="{% url 'elecciones:detalle' votacion.slug %}"
+        >
+          Cancelar
+        </a>
+      </div>
+    </form>
+  </section>
+{% endblock %}
