@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
-from django.db.models import Count, Q
+from django.db.models import Count, Exists, OuterRef, Q
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -37,10 +37,52 @@ class LoginPorRolView(LoginView):
 
 
 def inicio(request):
-    edicion = Edicion.objects.filter(estado=Edicion.Estado.ACTIVA).order_by("-anio").first(); votaciones = Votacion.objects.none()
+    edicion = (
+        Edicion.objects
+        .filter(estado=Edicion.Estado.ACTIVA)
+        .order_by("-anio")
+        .first()
+    )
+    votaciones = Votacion.objects.none()
+
     if edicion:
-        votaciones = Votacion.objects.filter(categoria__edicion=edicion, categoria__estado=EstadoBase.ACTIVO, categoria__visible_publicamente=True, publicada=True).select_related("categoria", "tipo").annotate(total_opciones=Count("opciones", filter=Q(opciones__activa=True)))
-    return render(request, "elecciones/inicio.html", {"edicion": edicion, "votaciones": votaciones})
+        publicaciones_activas = PublicacionResultado.objects.filter(
+            votacion=OuterRef("pk"),
+            activa=True,
+        )
+
+        votaciones = (
+            Votacion.objects
+            .filter(
+                categoria__edicion=edicion,
+                categoria__estado=EstadoBase.ACTIVO,
+                categoria__visible_publicamente=True,
+                publicada=True,
+            )
+            .select_related(
+                "categoria",
+                "tipo",
+            )
+            .annotate(
+                total_opciones=Count(
+                    "opciones",
+                    filter=Q(opciones__activa=True),
+                ),
+                tiene_resultado_publicado=(
+                    Q(resultados_publicos=True)
+                    & Exists(publicaciones_activas)
+                ),
+            )
+        )
+
+    return render(
+        request,
+        "elecciones/inicio.html",
+        {
+            "edicion": edicion,
+            "votaciones": votaciones,
+        },
+    )
 
 def registrar_usuario(request):
     if request.user.is_authenticated:
@@ -65,8 +107,37 @@ def registrar_usuario(request):
 
 
 def detalle(request, slug):
-    votacion = get_object_or_404(Votacion.objects.select_related("categoria", "categoria__edicion", "tipo").prefetch_related("opciones"), slug=slug, publicada=True, categoria__visible_publicamente=True)
-    return render(request, "elecciones/detalle.html", {"votacion": votacion})
+    votacion = get_object_or_404(
+        Votacion.objects
+        .select_related(
+            "categoria",
+            "categoria__edicion",
+            "tipo",
+        )
+        .prefetch_related("opciones"),
+        slug=slug,
+        publicada=True,
+        categoria__visible_publicamente=True,
+    )
+
+    tiene_resultado_publicado = (
+        votacion.resultados_publicos
+        and PublicacionResultado.objects.filter(
+            votacion=votacion,
+            activa=True,
+        ).exists()
+    )
+
+    return render(
+        request,
+        "elecciones/detalle.html",
+        {
+            "votacion": votacion,
+            "tiene_resultado_publicado": (
+                tiene_resultado_publicado
+            ),
+        },
+    )
 
 @login_required
 def panel(request):

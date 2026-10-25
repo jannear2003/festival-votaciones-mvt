@@ -71,7 +71,23 @@
                 <p>{{ v.descripcion|truncatewords:25 }}</p>
                 <div class="voting-entry__foot">
                   <span>{{ v.total_opciones }} opciones</span>
-                  <a href="{{ v.get_absolute_url }}">Conocer la votación <span aria-hidden="true">→</span></a>
+
+                  <div class="voting-entry__links">
+                    <a href="{{ v.get_absolute_url }}">
+                      Conocer la votación
+                      <span aria-hidden="true">→</span>
+                    </a>
+
+                    {% if v.tiene_resultado_publicado %}
+                      <a
+                        class="voting-entry__results"
+                        href="{% url 'elecciones:resultado_publico' v.slug %}"
+                      >
+                        Ver resultados oficiales
+                        <span aria-hidden="true">↗</span>
+                      </a>
+                    {% endif %}
+                  </div>
                 </div>
               </div>
             </article>
