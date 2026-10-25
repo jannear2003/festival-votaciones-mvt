@@ -13,6 +13,15 @@
     >
   </div>
 {% endif %}
+{% if votacion and votacion.imagen %}
+  <p class="image-management-note js-image-status" role="status">
+    La portada actual se conservará salvo que seleccione una nueva o marque la opción para retirarla.
+  </p>
+{% else %}
+  <p class="image-management-note js-image-status" role="status">
+    No hay una portada configurada. Puede seleccionar una de forma opcional.
+  </p>
+{% endif %}
 <div class="media-preview media-preview--pending" hidden>
   <p class="media-preview__label">Vista previa seleccionada</p>
   <img alt="" class="js-selected-preview">
@@ -28,6 +37,15 @@
       height="320"
     >
   </div>
+{% endif %}
+{% if option_form.instance.pk and option_form.instance.imagen %}
+  <p class="image-management-note js-image-status" role="status">
+    La imagen actual se conservará salvo que seleccione una nueva o marque la opción para retirarla.
+  </p>
+{% else %}
+  <p class="image-management-note js-image-status" role="status">
+    Esta opción no tiene una imagen configurada.
+  </p>
 {% endif %}
 <div class="media-preview media-preview--pending" hidden>
   <p class="media-preview__label">Vista previa seleccionada</p>

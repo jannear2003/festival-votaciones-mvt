@@ -1054,3 +1054,50 @@ body.trail-off .festival-particle { display: none; }
     transform: none;
   }
 }
+
+/* Gestion administrativa de imagenes configurables. */
+.image-management-note {
+  max-width: 680px;
+  margin: -10px 0 18px;
+  padding: 11px 14px;
+  border-left: 3px solid var(--flg-gold);
+  border-radius: 4px 14px 14px 4px;
+  color: #53312d;
+  background: rgba(255, 247, 232, .76);
+  font-size: .92rem;
+  line-height: 1.45;
+}
+
+.media-preview.is-pending-removal {
+  position: relative;
+  opacity: .48;
+  filter: grayscale(.65);
+}
+
+.media-preview.is-pending-removal::after {
+  content: "Se retirara al guardar";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  padding: 8px 13px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(104, 28, 39, .92);
+  font-size: .82rem;
+  font-weight: 800;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.field input[type="checkbox"][name$="-clear"] {
+  width: 20px;
+  min-height: 20px;
+  accent-color: var(--flg-rose);
+}
+
+@media (max-width: 700px) {
+  .media-preview.is-pending-removal::after {
+    width: min(80%, 240px);
+    white-space: normal;
+  }
+}
