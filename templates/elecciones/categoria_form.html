@@ -12,6 +12,15 @@
     >
   </div>
 {% endif %}
+{% if categoria and categoria.imagen %}
+  <p class="image-management-note js-image-status" role="status">
+    La imagen actual se conservará salvo que seleccione una nueva o marque la opción para retirarla.
+  </p>
+{% else %}
+  <p class="image-management-note js-image-status" role="status">
+    No hay una imagen configurada. Puede seleccionar una de forma opcional.
+  </p>
+{% endif %}
 <div class="media-preview media-preview--pending" hidden>
   <p class="media-preview__label">Vista previa seleccionada</p>
   <img alt="" class="js-selected-preview">

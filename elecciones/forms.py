@@ -30,6 +30,12 @@ class RegistroUsuarioForm(UserCreationForm):
         return email
 
 
+class ImagenAdministrableWidget(forms.ClearableFileInput):
+    initial_text = "Archivo configurado"
+    input_text = "Seleccionar nueva imagen"
+    clear_checkbox_label = "Retirar imagen actual al guardar"
+
+
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria
@@ -43,13 +49,19 @@ class CategoriaForm(forms.ModelForm):
             "estado",
             "visible_publicamente",
         ]
-        widgets = {"descripcion": forms.Textarea(attrs={"rows": 3}), "reglas": forms.Textarea(attrs={"rows": 4})}
+        widgets = {
+            "descripcion": forms.Textarea(attrs={"rows": 3}),
+            "reglas": forms.Textarea(attrs={"rows": 4}),
+            "imagen": ImagenAdministrableWidget(),
+        }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         campo = self.fields["imagen"]
         campo.help_text = (
             "Formatos permitidos: JPEG, PNG y WebP. "
-            "Tamaño máximo: 5 MB."
+            "Tamaño máximo: 5 MB. "
+            "Use una imagen general y representativa de la categoría, "
+            "con el elemento principal cerca del centro."
         )
         campo.widget.attrs.update({
             "accept": "image/jpeg,image/png,image/webp",
@@ -111,8 +123,15 @@ class VotacionForm(forms.ModelForm):
         ]
         widgets = {
             "descripcion": forms.Textarea(attrs={"rows": 4}),
-            "fecha_apertura": forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
-            "fecha_cierre": forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "imagen": ImagenAdministrableWidget(),
+            "fecha_apertura": forms.DateTimeInput(
+                attrs={"type": "datetime-local"},
+                format="%Y-%m-%dT%H:%M",
+            ),
+            "fecha_cierre": forms.DateTimeInput(
+                attrs={"type": "datetime-local"},
+                format="%Y-%m-%dT%H:%M",
+            ),
         }
 
     def __init__(self, *args, **kwargs):
@@ -121,7 +140,9 @@ class VotacionForm(forms.ModelForm):
         campo_imagen = self.fields["imagen"]
         campo_imagen.help_text = (
             "Formatos permitidos: JPEG, PNG y WebP. "
-            "Tamaño máximo: 5 MB."
+            "Tamaño máximo: 5 MB. "
+            "Use una portada horizontal que diferencie esta votación "
+            "de su categoría."
         )
         campo_imagen.widget.attrs.update({
             "accept": "image/jpeg,image/png,image/webp",
@@ -162,7 +183,9 @@ class OpcionForm(forms.ModelForm):
 
         campo = self.fields["imagen"]
         campo.help_text = (
-            "Imagen opcional. JPEG, PNG o WebP, máximo 5 MB."
+            "Imagen opcional. JPEG, PNG o WebP, máximo 5 MB. "
+            "Use un encuadre y una calidad equivalentes para todas "
+            "las opciones de la misma votación."
         )
         campo.widget.attrs.update({
             "accept": "image/jpeg,image/png,image/webp",
@@ -178,7 +201,10 @@ class OpcionForm(forms.ModelForm):
             "orden",
             "activa",
         ]
-        widgets = {"descripcion": forms.Textarea(attrs={"rows": 2})}
+        widgets = {
+            "descripcion": forms.Textarea(attrs={"rows": 2}),
+            "imagen": ImagenAdministrableWidget(),
+        }
 
 
 OpcionFormSet = inlineformset_factory(
