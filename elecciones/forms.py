@@ -33,8 +33,29 @@ class RegistroUsuarioForm(UserCreationForm):
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria
-        fields = ["edicion", "nombre", "descripcion", "reglas", "orden", "estado", "visible_publicamente"]
+        fields = [
+            "edicion",
+            "nombre",
+            "descripcion",
+            "reglas",
+            "imagen",
+            "orden",
+            "estado",
+            "visible_publicamente",
+        ]
         widgets = {"descripcion": forms.Textarea(attrs={"rows": 3}), "reglas": forms.Textarea(attrs={"rows": 4})}
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        campo = self.fields["imagen"]
+        campo.help_text = (
+            "Formatos permitidos: JPEG, PNG y WebP. "
+            "Tamaño máximo: 5 MB."
+        )
+        campo.widget.attrs.update({
+            "accept": "image/jpeg,image/png,image/webp",
+            "class": "js-image-input",
+        })
+
     def clean(self):
         cleaned = super().clean()
         if cleaned.get("visible_publicamente") and cleaned.get("estado") != EstadoBase.ACTIVO:
@@ -76,8 +97,16 @@ class VotacionForm(forms.ModelForm):
     class Meta:
         model = Votacion
         fields = [
-            "categoria", "tipo", "nombre", "slug", "descripcion",
-            "fecha_apertura", "fecha_cierre", "estado", "publicada",
+            "categoria",
+            "tipo",
+            "nombre",
+            "slug",
+            "descripcion",
+            "imagen",
+            "fecha_apertura",
+            "fecha_cierre",
+            "estado",
+            "publicada",
             "resultados_publicos",
         ]
         widgets = {
@@ -88,6 +117,17 @@ class VotacionForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        campo_imagen = self.fields["imagen"]
+        campo_imagen.help_text = (
+            "Formatos permitidos: JPEG, PNG y WebP. "
+            "Tamaño máximo: 5 MB."
+        )
+        campo_imagen.widget.attrs.update({
+            "accept": "image/jpeg,image/png,image/webp",
+            "class": "js-image-input",
+        })
+
         self.fields["fecha_apertura"].input_formats = ["%Y-%m-%dT%H:%M"]
         self.fields["fecha_cierre"].input_formats = ["%Y-%m-%dT%H:%M"]
         self.fields["categoria"].queryset = Categoria.objects.select_related("edicion").exclude(estado=EstadoBase.ARCHIVADO)
@@ -117,9 +157,27 @@ class VotacionForm(forms.ModelForm):
 
 
 class OpcionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        campo = self.fields["imagen"]
+        campo.help_text = (
+            "Imagen opcional. JPEG, PNG o WebP, máximo 5 MB."
+        )
+        campo.widget.attrs.update({
+            "accept": "image/jpeg,image/png,image/webp",
+            "class": "js-image-input",
+        })
+
     class Meta:
         model = Opcion
-        fields = ["nombre", "descripcion", "orden", "activa"]
+        fields = [
+            "nombre",
+            "descripcion",
+            "imagen",
+            "orden",
+            "activa",
+        ]
         widgets = {"descripcion": forms.Textarea(attrs={"rows": 2})}
 
 

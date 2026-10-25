@@ -5,7 +5,7 @@
   const revealMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   if (!revealMotion.matches && "IntersectionObserver" in window) {
     const revealTargets = document.querySelectorAll(
-      ".container > section:not(.hero), .container > article, .festival-aside, .voting-entry, .admin-item, .result-row, .stats article, .form-card, .login"
+      ".container > section:not(.hero):not(.form-card), .container > article:not(.form-card), .festival-aside, .voting-entry, .admin-item, .result-row, .stats article, .login"
     );
     const siblingOrder = new Map();
     revealTargets.forEach(element => {

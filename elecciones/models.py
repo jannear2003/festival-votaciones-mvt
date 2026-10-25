@@ -1,5 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+
+from .validators import validar_imagen_configurable
 from django.urls import reverse
 
 
@@ -60,6 +62,11 @@ class Categoria(models.Model):
     nombre = models.CharField(max_length=150)
     descripcion = models.TextField(blank=True)
     reglas = models.TextField(blank=True)
+    imagen = models.ImageField(
+        upload_to="categorias/",
+        blank=True,
+        validators=[validar_imagen_configurable],
+    )
     orden = models.PositiveIntegerField(default=1)
     estado = models.CharField(max_length=15, choices=EstadoBase.choices, default=EstadoBase.BORRADOR)
     visible_publicamente = models.BooleanField(default=False)
@@ -109,6 +116,11 @@ class Votacion(models.Model):
     nombre = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, unique=True)
     descripcion = models.TextField()
+    imagen = models.ImageField(
+        upload_to="votaciones/",
+        blank=True,
+        validators=[validar_imagen_configurable],
+    )
     fecha_apertura = models.DateTimeField()
     fecha_cierre = models.DateTimeField()
     estado = models.CharField(max_length=15, choices=Estado.choices, default=Estado.BORRADOR)
@@ -142,7 +154,11 @@ class Opcion(models.Model):
     votacion = models.ForeignKey(Votacion, on_delete=models.PROTECT, related_name="opciones")
     nombre = models.CharField(max_length=180)
     descripcion = models.TextField(blank=True)
-    imagen = models.ImageField(upload_to="opciones/", blank=True)
+    imagen = models.ImageField(
+        upload_to="opciones/",
+        blank=True,
+        validators=[validar_imagen_configurable],
+    )
     orden = models.PositiveIntegerField(default=1)
     activa = models.BooleanField(default=True)
 

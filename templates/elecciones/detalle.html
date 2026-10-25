@@ -1,61 +1,143 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load categoria_visual %}
+
 {% block title %}{{ votacion.nombre }}{% endblock %}
+
 {% block content %}
-<nav class="crumb"><a href="{% url 'elecciones:inicio' %}">Inicio</a> / {{ votacion.nombre }}</nav>
-<article class="detail">
-  <span class="badge state-{{ votacion.estado_efectivo|lower }}">{{ votacion.estado_efectivo_display }}</span>
-  <h1>{{ votacion.nombre }}</h1>
-  <p class="category">{{ votacion.categoria.edicion.nombre }} · {{ votacion.categoria.nombre }} · {{ votacion.tipo.nombre }}</p>
-  <p>{{ votacion.descripcion }}</p>
-  <p class="voting-period"><strong>Periodo:</strong> abre el {{ votacion.fecha_apertura|date:'d/m/Y H:i' }} y cierra el {{ votacion.fecha_cierre|date:'d/m/Y H:i' }} (hora de Colombia).</p>
+<nav class="crumb">
+  <a href="{% url 'elecciones:inicio' %}">Inicio</a>
+  / {{ votacion.nombre }}
+</nav>
 
-  {% if motivo == 'NO_INICIADA' %}
-  <div class="notice" role="status">La votación todavía no está abierta. Podrás participar desde la fecha indicada.</div>
-  {% elif motivo == 'FINALIZADA' %}
-  <div class="notice" role="status">La votación está cerrada: el periodo de participación ya terminó.</div>
-  {% elif motivo == 'CANCELADA' %}
-  <div class="notice" role="status">La votación fue cancelada y no recibe participaciones.</div>
-  {% elif motivo %}
-  <div class="notice" role="status">La votación no está habilitada para recibir participaciones.</div>
-  {% endif %}
+{% votacion_imagen_url votacion as imagen_votacion %}
+{% votacion_respaldo_url votacion as respaldo_votacion %}
 
-  <h2>Opciones</h2>
-  <div class="grid">
-    {% for opcion in votacion.opciones.all %}
-      {% if opcion.activa %}<section class="card"><h3>{{ opcion.nombre }}</h3><p>{{ opcion.descripcion|default:'Información pendiente.' }}</p></section>{% endif %}
-    {% empty %}<p>No hay opciones configuradas.</p>
-    {% endfor %}
+<article class="detail voting-detail">
+  <div class="voting-detail__visual">
+    <img
+      src="{{ imagen_votacion }}"
+      data-fallback="{{ respaldo_votacion }}"
+      class="js-image-fallback"
+      alt=""
+      width="1400"
+      height="760"
+    >
   </div>
-  <div class="actions participation-action">
-    {% if not motivo %}
-      {% if user.is_authenticated %}
-        <a
-          class="btn"
-          href="{% url 'elecciones:participar' votacion.slug %}"
-        >
-          Participar ahora
-        </a>
-      {% else %}
-        <div class="notice">
-          Para participar debes registrarte o iniciar sesión.
-        </div>
-        <div class="actions">
+
+  <div class="voting-detail__body">
+    <span class="badge state-{{ votacion.estado_efectivo|lower }}">
+      {{ votacion.estado_efectivo_display }}
+    </span>
+
+    <h1>{{ votacion.nombre }}</h1>
+
+    <p class="category">
+      {{ votacion.categoria.edicion.nombre }} ·
+      {{ votacion.categoria.nombre }} ·
+      {{ votacion.tipo.nombre }}
+    </p>
+
+    <p>{{ votacion.descripcion }}</p>
+
+    <p class="voting-period">
+      <strong>Periodo:</strong>
+      abre el {{ votacion.fecha_apertura|date:"d/m/Y H:i" }}
+      y cierra el {{ votacion.fecha_cierre|date:"d/m/Y H:i" }}
+      (hora de Colombia).
+    </p>
+
+    {% if motivo == "NO_INICIADA" %}
+      <div class="notice" role="status">
+        La votación todavía no está abierta. Podrás participar
+        desde la fecha indicada.
+      </div>
+    {% elif motivo == "FINALIZADA" %}
+      <div class="notice" role="status">
+        La votación está cerrada: el periodo de participación
+        ya terminó.
+      </div>
+    {% elif motivo == "CANCELADA" %}
+      <div class="notice" role="status">
+        La votación fue cancelada y no recibe participaciones.
+      </div>
+    {% elif motivo %}
+      <div class="notice" role="status">
+        La votación no está habilitada para recibir
+        participaciones.
+      </div>
+    {% endif %}
+
+    <h2>Opciones</h2>
+
+    <div class="grid option-grid">
+      {% for opcion in votacion.opciones.all %}
+        {% if opcion.activa %}
+          <section class="card option-card">
+            {% if opcion.imagen %}
+              <div class="option-card__image">
+                <img
+                  src="{{ opcion.imagen.url }}"
+                  class="js-option-image"
+                  alt="Imagen de la opción {{ opcion.nombre }}"
+                  loading="lazy"
+                  width="900"
+                  height="600"
+                >
+              </div>
+            {% endif %}
+
+            <div class="option-card__content">
+              <h3>{{ opcion.nombre }}</h3>
+              <p>
+                {{ opcion.descripcion|default:"Información pendiente." }}
+              </p>
+            </div>
+          </section>
+        {% endif %}
+      {% empty %}
+        <p>No hay opciones configuradas.</p>
+      {% endfor %}
+    </div>
+
+    <div class="actions participation-action">
+      {% if not motivo %}
+        {% if user.is_authenticated %}
           <a
             class="btn"
-            href="{% url 'login' %}?next={% url 'elecciones:participar' votacion.slug %}"
+            href="{% url 'elecciones:participar' votacion.slug %}"
           >
-            Iniciar sesión para votar
+            Participar ahora
           </a>
-          <a
-            class="btn alt"
-            href="{% url 'elecciones:registro' %}"
-          >
-            Crear cuenta
-          </a>
-        </div>
+        {% else %}
+          <div class="notice">
+            Para participar debes registrarte o iniciar sesión.
+          </div>
+
+          <div class="actions">
+            <a
+              class="btn"
+              href="{% url 'login' %}?next={% url 'elecciones:participar' votacion.slug %}"
+            >
+              Iniciar sesión para votar
+            </a>
+
+            <a
+              class="btn alt"
+              href="{% url 'elecciones:registro' %}"
+            >
+              Crear cuenta
+            </a>
+          </div>
+        {% endif %}
       {% endif %}
-    {% endif %}
-    <a class="btn alt" href="{% url 'elecciones:inicio' %}">Volver</a>
+
+      <a
+        class="btn alt"
+        href="{% url 'elecciones:inicio' %}"
+      >
+        Volver
+      </a>
+    </div>
   </div>
 </article>
 {% endblock %}
