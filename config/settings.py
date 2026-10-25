@@ -339,3 +339,6 @@ if "test" in sys.argv:
             ),
         },
     }
+# Archivos multimedia cargados por usuarios autorizados.
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

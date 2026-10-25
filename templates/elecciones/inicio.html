@@ -44,10 +44,23 @@
 
       <div class="voting-list">
         {% for v in votaciones %}
-          {% with ruta_imagen=v.categoria|categoria_imagen %}
+          {% votacion_imagen_url v as imagen_votacion %}
+          {% votacion_respaldo_url v as respaldo_votacion %}
             <article class="voting-entry">
-              <a class="voting-entry__art" href="{{ v.get_absolute_url }}" aria-label="Consultar {{ v.nombre }}">
-                <img src="{% static ruta_imagen %}" alt="" loading="lazy" width="1200" height="800">
+              <a
+                class="voting-entry__art"
+                href="{{ v.get_absolute_url }}"
+                aria-label="Consultar {{ v.nombre }}"
+              >
+                <img
+                  src="{{ imagen_votacion }}"
+                  data-fallback="{{ respaldo_votacion }}"
+                  class="js-image-fallback"
+                  alt=""
+                  loading="lazy"
+                  width="1200"
+                  height="800"
+                >
                 <span aria-hidden="true">↗</span>
               </a>
               <div class="voting-entry__copy">
@@ -62,7 +75,6 @@
                 </div>
               </div>
             </article>
-          {% endwith %}
         {% empty %}
           <div class="voting-empty">
             <span aria-hidden="true">✧</span>

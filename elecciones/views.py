@@ -82,14 +82,14 @@ def categorias_lista(request):
 
 @login_required
 def categoria_crear(request):
-    form=CategoriaForm(request.POST or None)
+    form=CategoriaForm(request.POST or None, request.FILES or None)
     if request.method=="POST" and form.is_valid():
         categoria=form.save(); messages.success(request,f"La categoría “{categoria.nombre}” fue creada correctamente."); return redirect("elecciones:categorias_lista")
     return render(request,"elecciones/categoria_form.html",{"form":form,"titulo":"Crear categoría"})
 
 @login_required
 def categoria_editar(request,pk):
-    categoria=get_object_or_404(Categoria,pk=pk); form=CategoriaForm(request.POST or None,instance=categoria)
+    categoria=get_object_or_404(Categoria,pk=pk); form=CategoriaForm(request.POST or None,request.FILES or None,instance=categoria,)
     if request.method=="POST" and form.is_valid():
         categoria=form.save(); messages.success(request,f"La categoría “{categoria.nombre}” fue actualizada."); return redirect("elecciones:categorias_lista")
     return render(request,"elecciones/categoria_form.html",{"form":form,"titulo":"Editar categoría","categoria":categoria})
@@ -136,8 +136,8 @@ def votaciones_lista(request):
 
 
 def _guardar_votacion(request, instancia=None):
-    form = VotacionForm(request.POST or None, instance=instancia)
-    formset = OpcionFormSet(request.POST or None, instance=instancia, prefix="opciones")
+    form = VotacionForm(request.POST or None, request.FILES or None, instance=instancia)
+    formset = OpcionFormSet(request.POST or None, request.FILES or None, instance=instancia, prefix="opciones")
     if request.method == "POST" and form.is_valid() and formset.is_valid():
         with transaction.atomic():
             votacion = form.save()

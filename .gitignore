@@ -10,3 +10,6 @@ staticfiles/
 .coverage
 
 .env.mysql
+
+# Archivos multimedia cargados durante desarrollo
+media/

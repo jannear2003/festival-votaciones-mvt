@@ -575,3 +575,169 @@ body.trail-off .festival-particle { display: none; }
   .festival-home__signature { font-size: .48rem; }
   .container > section:not(.hero) { padding: 13px 6px; }
 }
+
+/* Imágenes configurables de categorías, votaciones y opciones. */
+.voting-detail {
+  overflow: hidden;
+  padding: 0;
+}
+
+.voting-detail__visual {
+  position: relative;
+  aspect-ratio: 16 / 7;
+  min-height: 260px;
+  overflow: hidden;
+  background: #542019;
+}
+
+.voting-detail__visual::after {
+  content: "";
+  position: absolute;
+  inset: 45% 0 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      0deg,
+      rgba(37, 8, 6, .48),
+      transparent
+    );
+}
+
+.voting-detail__visual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.voting-detail__body {
+  padding: clamp(24px, 5vw, 52px);
+}
+
+.option-grid {
+  align-items: stretch;
+}
+
+.option-card {
+  overflow: hidden;
+  padding: 0;
+}
+
+.option-card::before {
+  display: none !important;
+}
+
+.option-card__image {
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: #eadbc9;
+}
+
+.option-card__image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .35s ease;
+}
+
+.option-card:hover .option-card__image img {
+  transform: scale(1.035);
+}
+
+.option-card__content {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 145px;
+  padding: 20px;
+}
+
+.option-card__content h3,
+.option-card__content p {
+  margin: 0;
+}
+
+.media-preview {
+  max-width: 680px;
+  margin: 17px 0 23px;
+  padding: 12px;
+  border: 1px solid rgba(104, 28, 39, .16);
+  border-radius: 24px 8px 24px 8px;
+  background: rgba(255, 255, 255, .58);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, .82),
+    0 10px 28px rgba(37, 8, 6, .09);
+}
+
+.media-preview--option {
+  max-width: 310px;
+}
+
+.media-preview--pending[hidden] {
+  display: none;
+}
+
+.media-preview__label {
+  margin: 0 0 9px;
+  color: #681c27;
+  font-size: .78rem;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.media-preview img {
+  display: block;
+  width: 100%;
+  max-height: 340px;
+  object-fit: cover;
+  border-radius: 18px 6px 18px 6px;
+  background: #eadbc9;
+}
+
+.field input[type="file"] {
+  min-height: auto;
+  padding: 10px;
+  border-radius: 18px 7px 18px 7px;
+  cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  .voting-detail__visual {
+    aspect-ratio: 4 / 3;
+    min-height: 220px;
+  }
+
+  .voting-detail__body {
+    padding: 22px 17px;
+  }
+
+  .option-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option-card__image img {
+    transition: none;
+  }
+
+  .option-card:hover .option-card__image img {
+    transform: none;
+  }
+}
+
+/*
+ * Los formularios administrativos son contenido esencial.
+ * Permanecen visibles aunque falle o no se inicialice el
+ * observador de animación.
+ */
+.container > .form-card,
+.container > section.form-card,
+.scroll-reveal-ready .form-card.scroll-reveal {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  filter: none;
+}
