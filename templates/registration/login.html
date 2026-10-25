@@ -10,6 +10,13 @@
     {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
     <button class="btn" type="submit">Ingresar</button>
   </form>
+
+  <p class="login-help">
+    <a href="{% url 'password_reset' %}">
+      ¿Olvidaste tu contraseña?
+    </a>
+  </p>
+
   <p>El registro público no concede acceso administrativo. El panel solo está disponible para cuentas con rol autorizado.</p>
 </section>
 {% endblock %}
