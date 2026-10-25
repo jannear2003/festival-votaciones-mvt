@@ -342,3 +342,16 @@ if "test" in sys.argv:
 # Archivos multimedia cargados por usuarios autorizados.
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Recuperacion de contrasena por correo.
+# En desarrollo, los mensajes se muestran en la terminal.
+EMAIL_BACKEND = (
+    "django.core.mail.backends.console.EmailBackend"
+)
+DEFAULT_FROM_EMAIL = (
+    "Sistema de votaciones "
+    "<no-responder@festival-votaciones.local>"
+)
+
+# Los enlaces de recuperacion caducan despues de una hora.
+PASSWORD_RESET_TIMEOUT = 3600

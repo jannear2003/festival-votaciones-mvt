@@ -1101,3 +1101,39 @@ body.trail-off .festival-particle { display: none; }
     white-space: normal;
   }
 }
+
+/* Recuperacion segura de contrasena. */
+.password-recovery {
+  max-widt*: 720px;
+  margin-inline: auto;
+}
+
+.password-recovery > p {
+  max-width: 62ch;
+}
+
+.password-recovery .field {
+  margin-top: 20px;
+}
+
+.password-recovery input[type="email"],
+.password-recovery input[type="password"] {
+  width: 100%;
+}
+
+.login-help {
+  margin: 18px 0 0;
+  text-align: center;
+}
+
+.login-help a {
+  color: var(--flg-wine);
+  font-weight: 750;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.login-help a:hover,
+.login-help a:focus-visible {
+  color: var(--flg-orange);
+}
