@@ -351,10 +351,21 @@ def participar(request, slug):
         )
         return redirect("elecciones:revisar_voto", slug=slug)
 
+    opciones_visuales = list(
+        zip(
+            form["opcion"],
+            form.fields["opcion"].queryset,
+        )
+    )
+
     return render(
         request,
         "elecciones/participar.html",
-        {"votacion": votacion, "form": form},
+        {
+            "votacion": votacion,
+            "form": form,
+            "opciones_visuales": opciones_visuales,
+        },
     )
 
 
