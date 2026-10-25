@@ -27,7 +27,34 @@
     {% endfor %}
   </div>
   <div class="actions participation-action">
-    {% if not motivo %}<a class="btn" href="{% url 'elecciones:participar' votacion.slug %}">Participar ahora</a>{% endif %}
+    {% if not motivo %}
+      {% if user.is_authenticated %}
+        <a
+          class="btn"
+          href="{% url 'elecciones:participar' votacion.slug %}"
+        >
+          Participar ahora
+        </a>
+      {% else %}
+        <div class="notice">
+          Para participar debes registrarte o iniciar sesión.
+        </div>
+        <div class="actions">
+          <a
+            class="btn"
+            href="{% url 'login' %}?next={% url 'elecciones:participar' votacion.slug %}"
+          >
+            Iniciar sesión para votar
+          </a>
+          <a
+            class="btn alt"
+            href="{% url 'elecciones:registro' %}"
+          >
+            Crear cuenta
+          </a>
+        </div>
+      {% endif %}
+    {% endif %}
     <a class="btn alt" href="{% url 'elecciones:inicio' %}">Volver</a>
   </div>
 </article>

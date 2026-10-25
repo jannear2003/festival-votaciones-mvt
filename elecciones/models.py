@@ -162,6 +162,13 @@ class Participacion(models.Model):
         ANULADA = "ANULADA", "Anulada"
 
     votacion = models.ForeignKey(Votacion, on_delete=models.PROTECT, related_name="participaciones")
+    usuario = models.ForeignKey(
+        "auth.User",
+        on_delete=models.PROTECT,
+        related_name="participaciones",
+        null=True,
+        blank=True,
+    )
     referencia = models.CharField(max_length=40, unique=True)
     clave_sesion = models.CharField(max_length=40)
     estado = models.CharField(max_length=12, choices=Estado.choices, default=Estado.INICIADA)
@@ -172,7 +179,16 @@ class Participacion(models.Model):
         verbose_name = "participación"
         verbose_name_plural = "participaciones"
         ordering = ["-iniciada_en"]
-        constraints = [models.UniqueConstraint(fields=["votacion", "clave_sesion"], name="una_participacion_por_votacion_y_sesion")]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["votacion", "clave_sesion"],
+                name="una_participacion_por_votacion_y_sesion",
+            ),
+            models.UniqueConstraint(
+                fields=["votacion", "usuario"],
+                name="una_participacion_por_votacion_y_usuario",
+            ),
+        ]
 
     def __str__(self):
         return self.referencia
