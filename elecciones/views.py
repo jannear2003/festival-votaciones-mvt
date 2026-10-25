@@ -479,3 +479,56 @@ def resultado_publico(request, slug):
 def auditoria_lista(request):
     eventos = EventoAuditoria.objects.select_related("usuario")[:200]
     return render(request, "elecciones/auditoria_lista.html", {"eventos": eventos})
+
+
+@login_required
+def mis_participaciones(request):
+    participaciones = (
+        Participacion.objects.filter(
+            usuario=request.user,
+            estado=Participacion.Estado.CONFIRMADA,
+        )
+        .select_related(
+            "votacion",
+            "votacion__categoria",
+            "votacion__categoria__edicion",
+            "votacion__tipo",
+        )
+        .order_by(
+            "-confirmada_en",
+            "-iniciada_en",
+        )
+    )
+
+    return render(
+        request,
+        "elecciones/mis_participaciones.html",
+        {
+            "participaciones": participaciones,
+        },
+    )
+
+
+@login_required
+def comprobante_participacion(request, referencia):
+    participacion = get_object_or_404(
+        Participacion.objects.select_related(
+            "votacion",
+            "votacion__categoria",
+            "votacion__categoria__edicion",
+            "votacion__tipo",
+        ),
+        referencia=referencia,
+        usuario=request.user,
+        estado=Participacion.Estado.CONFIRMADA,
+    )
+
+    return render(
+        request,
+        "elecciones/comprobante_voto.html",
+        {
+            "votacion": participacion.votacion,
+            "participacion": participacion,
+            "desde_historial": True,
+        },
+    )
