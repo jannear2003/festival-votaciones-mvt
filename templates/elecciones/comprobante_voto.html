@@ -1,1 +1,82 @@
-{% extends 'base.html' %}{% block title %}Participación registrada{% endblock %}{% block content %}<section class="form-card card success-panel" role="status"><p class="eyebrow dark">Paso 3 de 3</p><h1>Participación registrada</h1><dl class="review"><dt>Votación</dt><dd>{{ votacion.nombre }}</dd><dt>Referencia</dt><dd><strong>{{ participacion.referencia }}</strong></dd><dt>Fecha</dt><dd>{{ participacion.confirmada_en|date:'d/m/Y H:i:s' }}</dd></dl><div class="notice"><strong>Privacidad:</strong> el comprobante no revela la opción seleccionada.</div><a class="btn" href="{% url 'elecciones:inicio' %}">Volver al inicio</a></section>{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Participación registrada{% endblock %}
+
+{% block content %}
+<nav class="crumb" aria-label="Migas de navegación">
+  <a href="{% url 'elecciones:inicio' %}">
+    Inicio
+  </a>
+  /
+  <a href="{% url 'elecciones:mis_participaciones' %}">
+    Mis participaciones
+  </a>
+  / Comprobante
+</nav>
+
+<section
+  class="form-card card success-panel participation-receipt"
+  role="status"
+>
+  <p class="eyebrow dark">
+    Comprobante de participación
+  </p>
+
+  <h1>Participación registrada</h1>
+
+  <p>
+    Esta referencia confirma que tu cuenta participó en la
+    votación indicada.
+  </p>
+
+  <dl class="review participation-receipt__details">
+    <dt>Votación</dt>
+    <dd>{{ votacion.nombre }}</dd>
+
+    <dt>Edición</dt>
+    <dd>{{ votacion.categoria.edicion.nombre }}</dd>
+
+    <dt>Categoría</dt>
+    <dd>{{ votacion.categoria.nombre }}</dd>
+
+    <dt>Referencia</dt>
+    <dd>
+      <strong>{{ participacion.referencia }}</strong>
+    </dd>
+
+    <dt>Fecha</dt>
+    <dd>
+      {{ participacion.confirmada_en|date:"d/m/Y H:i:s" }}
+    </dd>
+  </dl>
+
+  <div class="notice">
+    <strong>Privacidad:</strong>
+    el comprobante acredita la participación, pero no revela
+    la opción seleccionada.
+  </div>
+
+  <div class="actions">
+    <a
+      class="btn"
+      href="{% url 'elecciones:mis_participaciones' %}"
+    >
+      Mis participaciones
+    </a>
+
+    <a
+      class="btn alt"
+      href="{{ votacion.get_absolute_url }}"
+    >
+      Ver votación
+    </a>
+
+    <a
+      class="btn alt"
+      href="{% url 'elecciones:inicio' %}"
+    >
+      Volver al inicio
+    </a>
+  </div>
+</section>
+{% endblock %}

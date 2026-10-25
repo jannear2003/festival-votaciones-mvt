@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Mis participaciones{% endblock %}
+
+{% block content %}
+<nav class="crumb" aria-label="Migas de navegación">
+  <a href="{% url 'elecciones:inicio' %}">Inicio</a>
+  / Mis participaciones
+</nav>
+
+<section
+  class="participation-history"
+  aria-labelledby="titulo-participaciones"
+>
+  <header class="participation-history__heading">
+    <div>
+      <p class="eyebrow dark">Mi cuenta</p>
+
+      <h1 id="titulo-participaciones">
+        Mis participaciones
+      </h1>
+
+      <p>
+        Consulta las votaciones en las que registraste una
+        participación y recupera el comprobante correspondiente.
+      </p>
+    </div>
+
+    <div
+      class="participation-history__count"
+      aria-label="Cantidad de participaciones confirmadas"
+    >
+      <strong>{{ participaciones|length }}</strong>
+
+      <span>
+        PARTICIPACIONES
+        <br>
+        CONFIRMADAS
+      </span>
+    </div>
+  </header>
+
+  {% if participaciones %}
+    <div class="participation-list">
+      {% for participacion in participaciones %}
+        <article class="participation-item">
+          <div class="participation-item__content">
+            <div class="participation-item__meta">
+              <span>
+                {{ participacion.votacion.categoria.edicion.nombre }}
+              </span>
+
+              <i aria-hidden="true">·</i>
+
+              <span>
+                {{ participacion.votacion.categoria.nombre }}
+              </span>
+            </div>
+
+            <h2>{{ participacion.votacion.nombre }}</h2>
+
+            <dl class="participation-item__details">
+              <div>
+                <dt>Referencia</dt>
+
+                <dd>
+                  <strong>
+                    {{ participacion.referencia }}
+                  </strong>
+                </dd>
+              </div>
+
+              <div>
+                <dt>Fecha</dt>
+
+                <dd>
+                  {{ participacion.confirmada_en|date:"d/m/Y H:i:s" }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>Estado</dt>
+
+                <dd>
+                  <span
+                    class="badge state-{{ participacion.votacion.estado_efectivo|lower }}"
+                  >
+                    {{ participacion.votacion.estado_efectivo_display }}
+                  </span>
+                </dd>
+              </div>
+            </dl>
+
+            <p class="participation-item__privacy">
+              El historial confirma la participación, pero no
+              muestra la opción seleccionada.
+            </p>
+          </div>
+
+          <div class="participation-item__actions">
+            <a
+              class="btn"
+              href="{% url 'elecciones:comprobante_participacion' participacion.referencia %}"
+            >
+              Ver comprobante
+            </a>
+
+            <a
+              class="btn alt"
+              href="{{ participacion.votacion.get_absolute_url }}"
+            >
+              Ver votación
+            </a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="participation-empty">
+      <span aria-hidden="true">✧</span>
+
+      <h2>Aún no tienes participaciones confirmadas</h2>
+
+      <p>
+        Cuando confirmes un voto, podrás recuperar desde aquí
+        la referencia y el comprobante correspondiente.
+      </p>
+
+      <a
+        class="btn"
+        href="{% url 'elecciones:inicio' %}"
+      >
+        Explorar votaciones
+      </a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
