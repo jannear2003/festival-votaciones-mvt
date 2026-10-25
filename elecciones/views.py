@@ -218,6 +218,7 @@ def _asegurar_sesion(request):
     return request.session.session_key
 
 
+@login_required
 def participar(request, slug):
     # El 404 queda reservado para un slug que realmente no existe.
     votacion = get_object_or_404(
@@ -258,17 +259,19 @@ def participar(request, slug):
             status=403,
         )
 
-    clave_sesion = _asegurar_sesion(request)
     if Participacion.objects.filter(
         votacion=votacion,
-        clave_sesion=clave_sesion,
+        usuario=request.user,
         estado=Participacion.Estado.CONFIRMADA,
     ).exists():
         messages.warning(
             request,
-            "Esta sesion ya registro una participacion en la votacion.",
+            "Esta cuenta ya registró una participación en la votación.",
         )
-        return redirect("elecciones:participacion_duplicada", slug=slug)
+        return redirect(
+            "elecciones:participacion_duplicada",
+            slug=slug,
+        )
 
     form = SeleccionVotoForm(request.POST or None, votacion=votacion)
     if request.method == "POST" and form.is_valid():
@@ -284,6 +287,7 @@ def participar(request, slug):
     )
 
 
+@login_required
 def revisar_voto(request, slug):
     votacion = _votacion_habilitada(slug)
     opcion_id = request.session.get(f"seleccion_votacion_{votacion.pk}")
@@ -294,6 +298,7 @@ def revisar_voto(request, slug):
     return render(request, "elecciones/revisar_voto.html", {"votacion": votacion, "opcion": opcion})
 
 
+@login_required
 def confirmar_voto(request, slug):
     if request.method != "POST":
         return HttpResponseNotAllowed(["POST"])
@@ -303,30 +308,70 @@ def confirmar_voto(request, slug):
     clave_sesion = _asegurar_sesion(request)
     try:
         with transaction.atomic():
-            participacion = Participacion.objects.create(votacion=votacion, referencia=f"VOT-{timezone.now():%Y%m%d}-{secrets.token_hex(4).upper()}", clave_sesion=clave_sesion, estado=Participacion.Estado.CONFIRMADA, confirmada_en=timezone.now())
+            participacion = Participacion.objects.create(
+                votacion=votacion,
+                usuario=request.user,
+                referencia=(
+                    f"VOT-{timezone.now():%Y%m%d}-"
+                    f"{secrets.token_hex(4).upper()}"
+                ),
+                clave_sesion=clave_sesion,
+                estado=Participacion.Estado.CONFIRMADA,
+                confirmada_en=timezone.now(),
+            )
             voto = Voto(participacion=participacion, votacion=votacion, opcion=opcion)
             voto.full_clean()
             voto.save()
     except IntegrityError:
-        messages.warning(request, "Esta sesión ya registró una participación en la votación.")
+        messages.warning(request, "Esta cuenta ya registró una participación en la votación.")
         return redirect("elecciones:participacion_duplicada", slug=slug)
     request.session.pop(f"seleccion_votacion_{votacion.pk}", None)
     request.session[f"referencia_votacion_{votacion.pk}"] = participacion.referencia
     return redirect("elecciones:comprobante_voto", slug=slug)
 
 
+@login_required
 def comprobante_voto(request, slug):
     votacion = get_object_or_404(Votacion, slug=slug)
     referencia = request.session.get(f"referencia_votacion_{votacion.pk}")
     if not referencia:
         return redirect("elecciones:detalle", slug=slug)
-    participacion = get_object_or_404(Participacion, referencia=referencia, clave_sesion=_asegurar_sesion(request))
+    participacion = get_object_or_404(
+        Participacion,
+        referencia=referencia,
+        usuario=request.user,
+    )
     return render(request, "elecciones/comprobante_voto.html", {"votacion": votacion, "participacion": participacion})
 
 
+@login_required
 def participacion_duplicada(request, slug):
-    votacion = get_object_or_404(Votacion, slug=slug)
-    return render(request, "elecciones/participacion_duplicada.html", {"votacion": votacion}, status=409)
+    votacion = get_object_or_404(
+        Votacion,
+        slug=slug,
+    )
+
+    participacion = Participacion.objects.filter(
+        votacion=votacion,
+        usuario=request.user,
+        estado=Participacion.Estado.CONFIRMADA,
+    ).first()
+
+    if participacion is None:
+        return redirect(
+            "elecciones:participar",
+            slug=slug,
+        )
+
+    return render(
+        request,
+        "elecciones/participacion_duplicada.html",
+        {
+            "votacion": votacion,
+            "participacion": participacion,
+        },
+        status=409,
+    )
 
 from django.db.models import Max
 from .forms import PublicacionResultadoForm
