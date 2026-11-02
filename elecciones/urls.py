@@ -16,3 +16,12 @@ urlpatterns += [
         name="comprobante_participacion",
     ),
 ]
+
+
+urlpatterns += [
+    path(
+        "api/categorias/",
+        views.api_categorias,
+        name="api_categorias",
+    ),
+]
