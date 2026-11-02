@@ -177,7 +177,21 @@ class Participacion(models.Model):
         CONFIRMADA = "CONFIRMADA", "Confirmada"
         ANULADA = "ANULADA", "Anulada"
 
-    votacion = models.ForeignKey(Votacion, on_delete=models.PROTECT, related_name="participaciones")
+    votacion = models.ForeignKey(
+        Votacion,
+        on_delete=models.PROTECT,
+        related_name="participaciones",
+    )
+    categoria = models.ForeignKey(
+        Categoria,
+        on_delete=models.PROTECT,
+        related_name="participaciones",
+    )
+    edicion = models.ForeignKey(
+        Edicion,
+        on_delete=models.PROTECT,
+        related_name="participaciones",
+    )
     usuario = models.ForeignKey(
         "auth.User",
         on_delete=models.PROTECT,
@@ -204,7 +218,59 @@ class Participacion(models.Model):
                 fields=["votacion", "usuario"],
                 name="una_participacion_por_votacion_y_usuario",
             ),
+            models.UniqueConstraint(
+                fields=["usuario", "edicion", "categoria"],
+                name="una_participacion_por_usuario_edicion_categoria",
+            ),
         ]
+
+    def clean(self):
+        errors = {}
+
+        if self.votacion_id:
+            categoria_esperada_id = self.votacion.categoria_id
+            edicion_esperada_id = self.votacion.categoria.edicion_id
+
+            if (
+                self.categoria_id
+                and self.categoria_id != categoria_esperada_id
+            ):
+                errors["categoria"] = (
+                    "La categoría no corresponde a la votación."
+                )
+
+            if (
+                self.edicion_id
+                and self.edicion_id != edicion_esperada_id
+            ):
+                errors["edicion"] = (
+                    "La edición no corresponde a la votación."
+                )
+
+        if (
+            self.categoria_id
+            and self.edicion_id
+            and self.categoria.edicion_id != self.edicion_id
+        ):
+            errors["edicion"] = (
+                "La categoría no pertenece a la edición indicada."
+            )
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        if self.votacion_id:
+            if not self.categoria_id:
+                self.categoria_id = self.votacion.categoria_id
+
+            if not self.edicion_id:
+                self.edicion_id = (
+                    self.votacion.categoria.edicion_id
+                )
+
+        self.full_clean()
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.referencia

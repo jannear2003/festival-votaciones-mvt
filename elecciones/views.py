@@ -331,13 +331,17 @@ def participar(request, slug):
         )
 
     if Participacion.objects.filter(
-        votacion=votacion,
         usuario=request.user,
+        edicion=votacion.categoria.edicion,
+        categoria=votacion.categoria,
         estado=Participacion.Estado.CONFIRMADA,
     ).exists():
         messages.warning(
             request,
-            "Esta cuenta ya registró una participación en la votación.",
+            (
+                "Esta cuenta ya registró una participación "
+                "en esta categoría para la edición actual."
+            ),
         )
         return redirect(
             "elecciones:participacion_duplicada",
@@ -392,6 +396,8 @@ def confirmar_voto(request, slug):
         with transaction.atomic():
             participacion = Participacion.objects.create(
                 votacion=votacion,
+                categoria=votacion.categoria,
+                edicion=votacion.categoria.edicion,
                 usuario=request.user,
                 referencia=(
                     f"VOT-{timezone.now():%Y%m%d}-"
@@ -405,7 +411,13 @@ def confirmar_voto(request, slug):
             voto.full_clean()
             voto.save()
     except IntegrityError:
-        messages.warning(request, "Esta cuenta ya registró una participación en la votación.")
+        messages.warning(
+            request,
+            (
+                "Esta cuenta ya registró una participación "
+                "en esta categoría para la edición actual."
+            ),
+        )
         return redirect("elecciones:participacion_duplicada", slug=slug)
     request.session.pop(f"seleccion_votacion_{votacion.pk}", None)
     request.session[f"referencia_votacion_{votacion.pk}"] = participacion.referencia
@@ -434,8 +446,9 @@ def participacion_duplicada(request, slug):
     )
 
     participacion = Participacion.objects.filter(
-        votacion=votacion,
         usuario=request.user,
+        edicion=votacion.categoria.edicion,
+        categoria=votacion.categoria,
         estado=Participacion.Estado.CONFIRMADA,
     ).first()
 
