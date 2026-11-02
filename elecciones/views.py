@@ -1,8 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
-from django.db.models import Count, Exists, OuterRef, Q
-from django.http import HttpResponseNotAllowed
+from django.db.models import Count, Exists, OuterRef, Prefetch, Q
+from django.http import HttpResponseNotAllowed, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from .forms import CategoriaForm, CopiarCategoriasForm, RegistroUsuarioForm
@@ -275,7 +275,7 @@ import secrets
 from django.db import IntegrityError
 from django.utils import timezone
 from .forms import SeleccionVotoForm
-from .models import Participacion, Voto
+from .models import Opcion, Participacion, Voto
 
 
 def _votacion_habilitada(slug):
@@ -626,4 +626,118 @@ def comprobante_participacion(request, referencia):
             "participacion": participacion,
             "desde_historial": True,
         },
+    )
+
+
+def api_categorias(request):
+    if request.method != "GET":
+        return HttpResponseNotAllowed(["GET"])
+
+    edicion = (
+        Edicion.objects.filter(
+            estado=Edicion.Estado.ACTIVA,
+        )
+        .order_by("-anio", "-pk")
+        .first()
+    )
+
+    if edicion is None:
+        return JsonResponse(
+            {
+                "edicion": None,
+                "categorias": [],
+            }
+        )
+
+    categorias = (
+        Categoria.objects.filter(
+            edicion=edicion,
+            estado=EstadoBase.ACTIVO,
+            visible_publicamente=True,
+        )
+        .prefetch_related(
+            Prefetch(
+                "votaciones",
+                queryset=(
+                    Votacion.objects.filter(
+                        publicada=True,
+                    )
+                    .exclude(
+                        estado=Votacion.Estado.CANCELADA,
+                    )
+                    .prefetch_related(
+                        Prefetch(
+                            "opciones",
+                            queryset=Opcion.objects.filter(
+                                activa=True,
+                            ).order_by(
+                                "orden",
+                                "nombre",
+                            ),
+                        )
+                    )
+                    .order_by(
+                        "fecha_apertura",
+                        "nombre",
+                    )
+                ),
+            )
+        )
+        .order_by(
+            "orden",
+            "nombre",
+        )
+    )
+
+    datos_categorias = []
+
+    for categoria in categorias:
+        votaciones = []
+
+        for votacion in categoria.votaciones.all():
+            opciones = [
+                {
+                    "id": opcion.pk,
+                    "nombre": opcion.nombre,
+                    "descripcion": opcion.descripcion,
+                }
+                for opcion in votacion.opciones.all()
+            ]
+
+            votaciones.append(
+                {
+                    "id": votacion.pk,
+                    "nombre": votacion.nombre,
+                    "slug": votacion.slug,
+                    "descripcion": votacion.descripcion,
+                    "estado": votacion.estado,
+                    "fecha_apertura": (
+                        votacion.fecha_apertura.isoformat()
+                    ),
+                    "fecha_cierre": (
+                        votacion.fecha_cierre.isoformat()
+                    ),
+                    "opciones": opciones,
+                }
+            )
+
+        datos_categorias.append(
+            {
+                "id": categoria.pk,
+                "nombre": categoria.nombre,
+                "descripcion": categoria.descripcion,
+                "orden": categoria.orden,
+                "votaciones": votaciones,
+            }
+        )
+
+    return JsonResponse(
+        {
+            "edicion": {
+                "id": edicion.pk,
+                "nombre": edicion.nombre,
+                "anio": edicion.anio,
+            },
+            "categorias": datos_categorias,
+        }
     )
