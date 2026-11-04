@@ -1,15 +1,24 @@
 # Sistema de votaciones configurable para el Festival de la Leyenda Vallenata
 
-Aplicación web académica desarrollada con Python, Django y el patrón MVT para administrar ediciones, categorías, votaciones y opciones del Festival de la Leyenda Vallenata.
+Aplicación web académica desarrollada con Python, Django y el patrón MVT para administrar ediciones, categorías, votaciones, opciones, participaciones, votos y resultados del Festival de la Leyenda Vallenata.
 
-La versión correspondiente a la actividad evaluativa del Eje 2 utiliza MySQL 8.4 como motor principal. El proyecto conserva compatibilidad adicional con PostgreSQL y SQLite, junto con una ruta documentada para una eventual evolución productiva.
+La implementación correspondiente al Eje 3 utiliza MySQL 8.4 como motor principal. El sistema garantiza un único voto por usuario, edición y categoría, incluso cuando una categoría contiene varias votaciones o subeventos. El proyecto conserva compatibilidad adicional con PostgreSQL y SQLite.
+
+## Estado de las ramas
+
+- `main`: versión académica estable anterior al Eje 3.
+- `develop`: integración funcional del Eje 3 mediante los Pull Requests 13 y 14.
+- `docs/entrega-eje3`: preparación de documentación y evidencias.
+- `feature/entrega-eje3`: rama utilizada para implementar CP-01 a CP-10.
+
+La rama `main` debe permanecer sin los incrementos del Eje 3 hasta completar la revisión del código, las evidencias, el video y el PDF definitivo.
 
 ## Alcance académico
 
 La cadena funcional principal es:
 
 ```text
-Edición -> Categoría -> Votación -> Opción
+Festival -> Edición -> Categoría -> Votación -> Opción
 ```
 
 El alcance implementado incluye:
@@ -19,25 +28,81 @@ El alcance implementado incluye:
 - Tipos de votación configurables.
 - Votaciones con fechas, estados y publicación controlada.
 - Opciones o participantes asociados con cada votación.
-- Portal público alimentado desde la base de datos.
+- Imágenes configurables para categorías, votaciones y opciones.
+- Portal público alimentado desde MySQL.
 - Django Admin e interfaces administrativas propias.
 - Registro, inicio y cierre de sesión.
+- Recuperación segura de contraseña.
 - Autorización mediante grupos y permisos de Django.
-- Redirección posterior al login según el tipo de cuenta.
+- Redirección posterior al inicio de sesión según el tipo de cuenta.
+- Emisión de voto exclusiva para usuarios autenticados.
+- Selección, revisión y confirmación antes del registro definitivo.
+- Restricción de un voto por usuario, edición y categoría.
+- Control de solicitudes duplicadas y concurrentes.
+- Comprobante privado sin revelar la opción seleccionada.
+- Historial personal en “Mis participaciones”.
+- Consulta pública controlada de resultados.
+- Eventos de auditoría.
+- API pública `GET /api/categorias/`.
 - Pruebas automatizadas ejecutadas sobre MySQL.
 
-El registro definitivo de votos, la auditoría avanzada, las pruebas de carga y el despliegue productivo se conservan como capacidades complementarias o evolución futura.
+Las pruebas de carga y el despliegue productivo se conservan como evolución futura.
+
+## Regla de voto único
+
+El sistema permite un único voto por:
+
+```text
+usuario + edición + categoría
+```
+
+La regla continúa aplicándose cuando una categoría contiene varias votaciones o subeventos. Después de confirmar un voto en uno de ellos, el usuario no puede registrar otro voto dentro de la misma categoría y edición. Sí puede participar en una categoría diferente.
+
+La protección se aplica mediante:
+
+1. Validación previa en las vistas de Django.
+2. Asociación de la participación con usuario, edición y categoría.
+3. Transacción atómica durante la confirmación.
+4. Manejo de errores de integridad.
+5. Restricción única en MySQL.
+6. Prueba automatizada con dos intentos concurrentes.
+
+La restricción de base de datos se denomina:
+
+```text
+una_participacion_por_usuario_edicion_categoria
+```
+
+## Flujo de votación
+
+```text
+Registro o inicio de sesión
+        |
+Consulta de votación y opciones
+        |
+Selección de una opción
+        |
+Revisión
+        |
+Confirmación
+        |
+Validaciones del servidor
+        |
+Registro transaccional en MySQL
+        |
+Comprobante y Mis participaciones
+```
 
 ## Arquitectura MVT
 
-- **Modelo:** define festivales, ediciones, categorías, votaciones, opciones y entidades complementarias.
-- **Vista:** consulta y procesa información, valida formularios y aplica reglas de navegación.
-- **Plantilla:** presenta el portal público, autenticación y administración.
+- **Modelo:** define festivales, ediciones, categorías, votaciones, opciones, participaciones, votos, publicaciones de resultados y eventos de auditoría.
+- **Vista:** consulta y procesa información, valida formularios y aplica reglas de negocio, autenticación y autorización.
+- **Plantilla:** presenta el portal público, la autenticación, el flujo de voto, los comprobantes y la administración.
 
 Flujo general:
 
 ```text
-URL -> Vista -> Modelo/ORM -> Plantilla -> Respuesta HTTP
+URL -> Vista -> Modelo/ORM -> MySQL -> Plantilla o JSON -> Respuesta HTTP
 ```
 
 ## Tecnologías
@@ -46,6 +111,7 @@ URL -> Vista -> Modelo/ORM -> Plantilla -> Respuesta HTTP
 - Django 6.0.5.
 - MySQL 8.4.
 - mysqlclient.
+- Pillow.
 - Docker y Docker Compose.
 - HTML y CSS.
 - Git y GitHub Codespaces.
@@ -53,14 +119,12 @@ URL -> Vista -> Modelo/ORM -> Plantilla -> Respuesta HTTP
 
 ## Requisitos previos
 
-### Ruta recomendada
+Ruta recomendada:
 
 - GitHub Codespaces, o
-- Python 3.12 y Docker con Docker Compose.
+- Python 3.12, Git, Docker Desktop y Docker Compose.
 
-### Dependencias Python
-
-Las dependencias se registran en `requirements.txt`.
+Las dependencias Python se registran en `requirements.txt`.
 
 ## Instalación recomendada con MySQL
 
@@ -69,34 +133,46 @@ Las dependencias se registran en `requirements.txt`.
 ```bash
 git clone https://github.com/jannear2003/festival-votaciones-mvt
 cd festival-votaciones-mvt
-git switch actividad-eje2-mysql
+git switch develop
 ```
 
-### 2. Crear y activar un entorno virtual fuera de Codespaces
+Para revisar la versión académica anterior al Eje 3 debe utilizarse `main`.
+
+### 2. Crear y activar un entorno virtual
+
+Linux, macOS o Codespaces:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 ```
 
-En Windows PowerShell:
+Windows PowerShell:
 
 ```powershell
-.venv\Scripts\Activate.ps1
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
 ### 3. Instalar dependencias
 
 ```bash
-pip install -r requirements.txt
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
 ### 4. Preparar las variables de MySQL
 
-Copie el archivo de ejemplo:
+Linux, macOS o Codespaces:
 
 ```bash
 cp .env.mysql.example .env.mysql
+```
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.mysql.example .env.mysql
 ```
 
 Edite `.env.mysql` y reemplace únicamente las contraseñas ficticias. No confirme este archivo en Git.
@@ -105,11 +181,6 @@ Edite `.env.mysql` y reemplace únicamente las contraseñas ficticias. No confir
 
 ```bash
 docker compose --env-file .env.mysql -f compose.mysql.yml up -d
-```
-
-Compruebe el estado:
-
-```bash
 docker compose --env-file .env.mysql -f compose.mysql.yml ps
 ```
 
@@ -117,17 +188,13 @@ El contenedor `festival-mysql` debe aparecer como `healthy`.
 
 ### 6. Configurar Django para MySQL
 
-Cargue las variables del contenedor:
+Linux, macOS o Codespaces:
 
 ```bash
 set -a
 source .env.mysql
 set +a
-```
 
-Exponga las variables que utiliza Django:
-
-```bash
 export DB_ENGINE=mysql
 export DB_NAME="$MYSQL_DATABASE"
 export DB_USER="$MYSQL_USER"
@@ -136,7 +203,7 @@ export DB_HOST=127.0.0.1
 export DB_PORT=3306
 ```
 
-No muestre ni publique las contraseñas.
+No muestre ni publique contraseñas.
 
 ### 7. Aplicar migraciones
 
@@ -144,12 +211,20 @@ No muestre ni publique las contraseñas.
 python manage.py migrate
 ```
 
-### 8. Cargar datos de demostración y roles
+La migración principal del Eje 3 es:
+
+```text
+elecciones.0006_unicidad_usuario_edicion_categoria
+```
+
+### 8. Cargar datos de demostración y configurar roles
 
 ```bash
 python manage.py loaddata datos_desarrollo
 python manage.py configurar_roles
 ```
+
+El proyecto también contiene el comando `python manage.py seed_demo`. No combine ambas cargas sin revisar previamente sus datos.
 
 ### 9. Crear un superusuario
 
@@ -157,33 +232,52 @@ python manage.py configurar_roles
 python manage.py createsuperuser
 ```
 
-La contraseña del superusuario debe ser diferente de las contraseñas de la base de datos.
-
 ### 10. Ejecutar la aplicación
 
 ```bash
 python manage.py runserver 0.0.0.0:8000
 ```
 
-Rutas principales:
+## Rutas principales
 
 - Portal público: `http://127.0.0.1:8000/`
 - Registro: `http://127.0.0.1:8000/cuentas/registro/`
 - Inicio de sesión: `http://127.0.0.1:8000/cuentas/login/`
+- Mis participaciones: `http://127.0.0.1:8000/cuenta/participaciones/`
 - Panel propio: `http://127.0.0.1:8000/administracion/`
 - Django Admin: `http://127.0.0.1:8000/admin/`
+- API de categorías: `http://127.0.0.1:8000/api/categorias/`
+
+En GitHub Codespaces debe utilizarse la dirección asignada al puerto 8000.
+
+## API pública de categorías
+
+Endpoint:
+
+```http
+GET /api/categorias/
+```
+
+La respuesta JSON consulta datos reales de MySQL e incluye:
+
+- Edición activa.
+- Categorías activas y visibles públicamente.
+- Votaciones publicadas y no canceladas.
+- Opciones activas.
+
+La API no expone usuarios, correos, contraseñas, claves de sesión, referencias de participación, votos individuales ni la opción seleccionada por cada usuario.
+
+Los métodos distintos de `GET` reciben una respuesta HTTP 405.
 
 ## Autenticación y autorización
 
-El sistema diferencia autenticación y autorización:
-
-- Una cuenta pública puede registrarse, iniciar sesión, utilizar el portal y cerrar sesión.
+- Una cuenta pública puede registrarse, iniciar sesión, consultar el portal y votar.
 - Una cuenta pública no puede entrar al panel ni a Django Admin.
-- Una cuenta con rol administrativo es dirigida al panel después del login.
+- Una cuenta con rol administrativo es dirigida al panel después del inicio de sesión.
 - Un superusuario puede acceder al panel y a Django Admin.
 - El acceso manual no autorizado a `/administracion/` produce una respuesta HTTP 403 controlada.
 
-Grupos administrativos configurados:
+Grupos administrativos:
 
 - Administrador general.
 - Configurador.
@@ -193,71 +287,90 @@ Grupos administrativos configurados:
 
 ## Pruebas automatizadas
 
-Ejecute:
+Comprobaciones generales:
 
 ```bash
 python manage.py check
-python manage.py test
+python manage.py makemigrations --check
+python manage.py migrate --plan
 ```
 
-Resultado de referencia de esta versión:
+Suite completa:
+
+```bash
+python manage.py test -v 2
+```
+
+Resultado de referencia del Eje 3:
 
 ```text
-26 pruebas ejecutadas
-26 pruebas aprobadas
+108 pruebas ejecutadas
+108 pruebas aprobadas
 0 fallos
 0 errores
 Motor: MySQL 8.4
 Base temporal: test_festival_votaciones
 ```
 
-Django crea una base temporal para las pruebas y la elimina al terminar, por lo que los datos de demostración de `festival_votaciones` no se alteran.
+Pruebas específicas:
+
+```bash
+python manage.py test elecciones.test_eje3_votacion_categoria -v 2
+python manage.py test elecciones.test_eje3_concurrencia -v 2
+python manage.py test elecciones.test_eje3_api_categorias -v 2
+```
+
+Django crea una base temporal y la elimina al finalizar. Los datos de `festival_votaciones` no se alteran.
+
+## Casos de prueba del Eje 3
+
+| Caso | Validación | Resultado esperado |
+|---|---|---|
+| CP-01 | Voto válido | Se registra una participación y un voto |
+| CP-02 | Segundo voto en la misma categoría y edición | Se rechaza y permanece un solo voto |
+| CP-03 | Voto en categoría diferente | Se permite |
+| CP-04 | Usuario no autenticado | Se redirige al inicio de sesión |
+| CP-05 | Categoría no habilitada | Se rechaza la operación |
+| CP-06 | Opción perteneciente a otra categoría | Se rechaza sin registrar voto |
+| CP-07 | Mis participaciones | Muestra las categorías votadas por el usuario |
+| CP-08 | Persistencia administrativa | El registro es consultable en MySQL y administración |
+| CP-09 | Dos intentos concurrentes | Solo queda una participación y un voto |
+| CP-10 | `GET /api/categorias/` | Devuelve JSON válido con datos reales |
+
+La matriz detallada se conserva en `docs/matriz_casos_prueba_eje3.md`.
 
 ## Motores disponibles
 
-### MySQL
+- **MySQL:** motor oficial para las evidencias del Eje 3.
+- **PostgreSQL:** compatibilidad adicional.
+- **SQLite:** alternativa para desarrollo básico.
 
-Motor principal de la actividad evaluativa:
-
-```text
-DB_ENGINE=mysql
-```
-
-### PostgreSQL
-
-Compatibilidad adicional validada:
-
-```text
-DB_ENGINE=postgresql
-```
-
-### SQLite
-
-Alternativa local rápida:
-
-```text
-DB_ENGINE=sqlite
-```
-
-Las evidencias académicas oficiales deben producirse con MySQL.
+SQLite no debe utilizarse como evidencia de concurrencia. Las evidencias oficiales deben producirse con MySQL 8.4.
 
 ## Seguridad
 
-- Las contraseñas de usuario se almacenan mediante los mecanismos de hash de Django.
-- Las credenciales de las bases se leen desde variables externas.
+- Las contraseñas se almacenan mediante hash de Django.
+- Las credenciales se leen desde variables externas.
 - `.env` y `.env.mysql` no se versionan.
-- Los formularios POST utilizan protección CSRF.
-- Las rutas administrativas requieren rol y permisos.
-- Django Admin exige una cuenta con `is_staff=True`.
+- Los formularios POST utilizan CSRF.
+- Las rutas de votación exigen autenticación.
+- Las rutas administrativas requieren permisos.
+- Django Admin exige una cuenta autorizada.
+- El comprobante no revela la opción seleccionada.
+- El historial no muestra participaciones de otros usuarios.
+- La API no expone información personal ni votos individuales.
+- MySQL impide duplicar el voto por usuario, categoría y edición.
 
 ## Estructura principal
 
 ```text
 config/                 Configuración del proyecto Django
-elecciones/             Modelos, vistas, formularios, URLs y pruebas
-templates/              Plantillas generales y de autenticación
+elecciones/             Modelos, vistas, formularios, URLs, comandos y pruebas
+templates/              Plantillas públicas, administrativas y de autenticación
 static/                 CSS, imágenes y recursos públicos
-docs/                   Trazabilidad y evidencias técnicas
+media/                  Imágenes administrables, excluidas de Git
+docs/                   Documentación académica y trazabilidad
+evidencias/             Capturas y salidas verificables por eje
 compose.mysql.yml       Servicio reproducible MySQL 8.4
 .env.mysql.example      Plantilla de variables sin secretos
 manage.py               Utilidad administrativa de Django
@@ -267,29 +380,32 @@ startup.sh              Inicio mediante Gunicorn
 
 ## Documentación académica
 
-- Matriz de trazabilidad: `docs/matriz_trazabilidad_eje2.md`
-- Registro de pruebas: `docs/pruebas_eje2.md`
+### Eje 2
 
-El PDF final incluirá fragmentos breves de código, explicación técnica, evidencia funcional y relación directa con la rúbrica.
+- `docs/matriz_trazabilidad_eje2.md`
+- `docs/pruebas_eje2.md`
+- `docs/plan_evidencias_eje2.md`
+- `docs/extractos_codigo_eje2.md`
+- `evidencias/eje2/`
 
-## Códigos relevantes previstos para el PDF
+### Eje 3
 
-- Configuración de MySQL en `config/settings.py`.
-- Relaciones Edición, Categoría, Votación y Opción en `elecciones/models.py`.
-- Formulario `RegistroUsuarioForm`.
-- Vista `registrar_usuario`.
-- Vista `LoginPorRolView`.
-- Middleware de autorización.
-- Consulta dinámica del portal.
-- Pruebas de registro, redirección y acceso administrativo.
+- `docs/matriz_casos_prueba_eje3.md`
+- `docs/plan_evidencias_eje3.md`
+- `docs/extractos_codigo_eje3.md`
+- `docs/ficha_acceso_eje3.md`
+- `docs/guion_video_eje3.md`
+- `evidencias/eje3/`
 
 ## Evolución productiva
 
-El repositorio conserva Gunicorn, WhiteNoise y documentación de Azure. No se aprovisionan recursos de nube para la entrega académica con el fin de evitar costos recurrentes. Una eventual adopción por el Festival requerirá dimensionamiento, pruebas de carga, monitoreo, almacenamiento administrado y controles institucionales.
+El repositorio conserva Gunicorn, WhiteNoise y documentación para una posible evolución hacia Azure. La entrega académica no requiere infraestructura de pago.
+
+Una adopción institucional requeriría revisión jurídica y de privacidad, gestión institucional de identidades, protección de secretos, base de datos administrada, almacenamiento persistente de imágenes, pruebas de carga y seguridad, monitoreo, respaldos, recuperación, HTTPS y un servidor WSGI o ASGI.
 
 ## Equipo
 
-La actividad requiere cuatro integrantes. La distribución definitiva se registrará en la matriz de trazabilidad y en el PDF conforme al trabajo real de cada integrante.
+La actividad es desarrollada por cuatro integrantes. La distribución definitiva de aportes debe registrarse en el PDF conforme al trabajo efectivamente realizado.
 
 ## Licencia y finalidad
 
