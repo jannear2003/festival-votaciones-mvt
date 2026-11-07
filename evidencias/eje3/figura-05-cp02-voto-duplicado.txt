@@ -1,0 +1,8 @@
+EVIDENCIA CP-02 - SEGUNDO VOTO RECHAZADO
+Fecha UTC: 2026-11-07 18:29:42 UTC
+
+22 objects imported automatically (use -v 2 for details).
+
+Participaciones en categoría principal: 1
+Votos en categoría principal: 1
+Subevento dos con participación: False

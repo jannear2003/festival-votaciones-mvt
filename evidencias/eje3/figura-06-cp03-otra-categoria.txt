@@ -1,0 +1,9 @@
+EVIDENCIA CP-03 - VOTO EN CATEGORIA DIFERENTE
+Fecha UTC: 2026-11-07 18:32:30 UTC
+
+22 objects imported automatically (use -v 2 for details).
+
+Participaciones demo confirmadas: 2
+Votos demo: 2
+Categoría: Demo Eje 3 - Categoría principal | Votación: Demo Eje 3 - Subevento uno
+Categoría: Demo Eje 3 - Categoría alternativa | Votación: Demo Eje 3 - Votación alternativa
