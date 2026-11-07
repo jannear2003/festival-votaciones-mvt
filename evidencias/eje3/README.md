@@ -253,7 +253,7 @@ Actualizar esta tabla durante el cierre:
 | Figura 08 | No | No | No | No |
 | Figura 09 | No | No | No | No |
 | Figura 10 | No | No | No | No |
-| Figura 11 | No | No | No | No |
+| Figura 11 | Sí | Sí | No | No |
 | Figura 12 | No | No | No | No |
 | Figura 13 | No | No | No | No |
 | Figura 14 | No | No | No | No aplica |

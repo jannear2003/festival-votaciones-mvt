@@ -1,0 +1,10 @@
+EVIDENCIA CP-07 - MIS PARTICIPACIONES
+Fecha UTC: 2026-11-07 18:57:50 UTC
+
+22 objects imported automatically (use -v 2 for details).
+
+Usuario de demostración: demo_eje3_a
+Participaciones confirmadas: 2
+Edición: Festival de la Leyenda Vallenata 2027 | Categoría: Demo Eje 3 - Categoría principal | Votación: Demo Eje 3 - Subevento uno | Estado: CONFIRMADA | Referencia: VOT-20261107-9A5C044C
+Edición: Festival de la Leyenda Vallenata 2027 | Categoría: Demo Eje 3 - Categoría alternativa | Votación: Demo Eje 3 - Votación alternativa | Estado: CONFIRMADA | Referencia: VOT-20261107-730F0580
+Participaciones de otros usuarios incluidas: False

@@ -1,0 +1,25 @@
+EVIDENCIA CP-08 - PERSISTENCIA Y CONSULTA ADMINISTRATIVA
+Fecha UTC: 2026-11-07 19:19:30 UTC
+
+22 objects imported automatically (use -v 2 for details).
+
+Motor: mysql
+Base: festival_votaciones
+Usuario consultado: demo_eje3_a
+Participaciones confirmadas: 2
+Votos relacionados: 2
+---
+Referencia: VOT-20261107-9A5C044C
+Edición: Festival de la Leyenda Vallenata 2027
+Categoría: Demo Eje 3 - Categoría principal
+Votación: Demo Eje 3 - Subevento uno
+Estado: CONFIRMADA
+Tiene voto relacionado: True
+---
+Referencia: VOT-20261107-730F0580
+Edición: Festival de la Leyenda Vallenata 2027
+Categoría: Demo Eje 3 - Categoría alternativa
+Votación: Demo Eje 3 - Votación alternativa
+Estado: CONFIRMADA
+Tiene voto relacionado: True
+Registros de otros usuarios incluidos: False
