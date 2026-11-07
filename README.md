@@ -7,9 +7,10 @@ La implementación correspondiente al Eje 3 utiliza MySQL 8.4 como motor princip
 ## Estado de las ramas
 
 - `main`: versión académica estable anterior al Eje 3.
-- `develop`: integración funcional del Eje 3 mediante los Pull Requests 13 y 14.
+- `develop`: integración funcional del Eje 3 mediante los Pull Requests 13, 14 y 15.
 - `docs/entrega-eje3`: preparación de documentación y evidencias.
 - `feature/entrega-eje3`: rama utilizada para implementar CP-01 a CP-10.
+- `feature/datos-demo-eje3`: rama utilizada para crear el comando de preparación de datos controlados.
 
 La rama `main` debe permanecer sin los incrementos del Eje 3 hasta completar la revisión del código, las evidencias, el video y el PDF definitivo.
 
@@ -44,6 +45,7 @@ El alcance implementado incluye:
 - Consulta pública controlada de resultados.
 - Eventos de auditoría.
 - API pública `GET /api/categorias/`.
+- Comando idempotente para preparar datos controlados del Eje 3.
 - Pruebas automatizadas ejecutadas sobre MySQL.
 
 Las pruebas de carga y el despliegue productivo se conservan como evolución futura.
@@ -226,6 +228,63 @@ python manage.py configurar_roles
 
 El proyecto también contiene el comando `python manage.py seed_demo`. No combine ambas cargas sin revisar previamente sus datos.
 
+### Preparar datos controlados del Eje 3
+
+El proyecto incluye un comando idempotente para crear o actualizar las cuentas, categorías, votaciones y opciones necesarias para demostrar los casos CP-01 a CP-10.
+
+Primero, defina las contraseñas como variables temporales de la terminal:
+
+```bash
+read -s -p "Contraseña para cuentas públicas demo: " \
+  DEMO_EJE3_PASSWORD_PUBLICA
+echo
+export DEMO_EJE3_PASSWORD_PUBLICA
+
+read -s -p "Contraseña para cuenta administrativa demo: " \
+  DEMO_EJE3_PASSWORD_ADMIN
+echo
+export DEMO_EJE3_PASSWORD_ADMIN
+```
+
+Compruebe únicamente que las variables estén cargadas, sin imprimir sus valores:
+
+```bash
+test -n "$DEMO_EJE3_PASSWORD_PUBLICA" \
+  && echo "Clave pública cargada"
+
+test -n "$DEMO_EJE3_PASSWORD_ADMIN" \
+  && echo "Clave administrativa cargada"
+```
+
+Prepare los datos de demostración:
+
+```bash
+python manage.py preparar_demo_eje3
+```
+
+El comando crea o actualiza:
+
+- `demo_eje3_a`, cuenta pública de demostración.
+- `demo_eje3_b`, segunda cuenta pública.
+- `demo_eje3_admin`, cuenta administrativa.
+- Una categoría principal con dos subeventos.
+- Una categoría alternativa.
+- Una categoría no habilitada.
+- Cuatro votaciones.
+- Doce opciones ficticias.
+
+El comando puede ejecutarse varias veces sin duplicar registros. También actualiza la vigencia de las votaciones habilitadas.
+
+Antes de repetir una práctica o grabación, retire únicamente los votos y participaciones de las cuentas de demostración:
+
+```bash
+python manage.py preparar_demo_eje3 --reiniciar-votos
+```
+
+La opción `--reiniciar-votos` no elimina participaciones históricas ni votos pertenecientes a usuarios diferentes de `demo_eje3_*`.
+
+Las contraseñas no deben almacenarse en el repositorio, el README, las evidencias, las capturas o el video.
+
 ### 9. Crear un superusuario
 
 ```bash
@@ -304,8 +363,8 @@ python manage.py test -v 2
 Resultado de referencia del Eje 3:
 
 ```text
-108 pruebas ejecutadas
-108 pruebas aprobadas
+114 pruebas ejecutadas
+114 pruebas aprobadas
 0 fallos
 0 errores
 Motor: MySQL 8.4
@@ -318,6 +377,7 @@ Pruebas específicas:
 python manage.py test elecciones.test_eje3_votacion_categoria -v 2
 python manage.py test elecciones.test_eje3_concurrencia -v 2
 python manage.py test elecciones.test_eje3_api_categorias -v 2
+python manage.py test elecciones.test_preparar_demo_eje3 -v 2
 ```
 
 Django crea una base temporal y la elimina al finalizar. Los datos de `festival_votaciones` no se alteran.

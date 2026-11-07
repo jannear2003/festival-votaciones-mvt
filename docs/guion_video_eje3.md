@@ -17,7 +17,7 @@ Este guion organiza una demostración técnica y funcional de máximo ocho minut
 1. Usar la rama `develop`.
 2. Confirmar que MySQL 8.4 está `healthy`.
 3. Aplicar migraciones y verificar que no existan operaciones pendientes.
-4. Ejecutar previamente las 108 pruebas.
+4. Ejecutar previamente las 114 pruebas.
 5. Preparar una categoría con dos votaciones o subeventos para CP-02.
 6. Preparar una segunda categoría habilitada para CP-03.
 7. Preparar una categoría inactiva o no visible para CP-05.
@@ -57,7 +57,7 @@ Las cuentas deben ser ficticias y creadas exclusivamente para la demostración.
 | 4:05-4:50 | Historial y administración | CP-07, CP-08 |
 | 4:50-5:35 | Concurrencia | CP-09 |
 | 5:35-6:20 | API | CP-10 |
-| 6:20-7:10 | Pruebas y repositorio | 108 pruebas |
+| 6:20-7:10 | Pruebas y repositorio | 114 pruebas |
 | 7:10-7:35 | Conclusiones | Cierre |
 
 Duración objetivo: 7:35.
@@ -207,8 +207,8 @@ python manage.py test elecciones.test_eje3_concurrencia -v 2
 **Mostrar:**
 
 ```text
-Found 108 test(s).
-Ran 108 tests
+Found 114 test(s).
+Ran 114 tests
 OK
 ```
 
@@ -221,7 +221,7 @@ Luego mostrar brevemente:
 
 **Guion:**
 
-> La suite completa ejecuta 108 pruebas sobre una base temporal MySQL y finaliza sin fallos ni errores. El repositorio público contiene las instrucciones de instalación, la migración de unicidad, las pruebas CP-01 a CP-10 y la documentación de evidencias. La rama main permanece separada hasta el cierre formal de la entrega.
+> La suite completa ejecuta 114 pruebas sobre una base temporal MySQL y finaliza sin fallos ni errores. El repositorio público contiene las instrucciones de instalación, la migración de unicidad, las pruebas CP-01 a CP-10 y la documentación de evidencias. La rama main permanece separada hasta el cierre formal de la entrega.
 
 ### 7:10-7:35. Cierre
 
@@ -229,7 +229,7 @@ Luego mostrar brevemente:
 
 **Guion:**
 
-> En conclusión, el Eje 3 implementa un flujo de voto autenticado y verificable, garantiza un voto por usuario, edición y categoría incluso bajo concurrencia, permite consultar las participaciones y expone información pública mediante una API de solo lectura. La solución queda respaldada por MySQL 8.4, control de versiones y 108 pruebas automatizadas. Muchas gracias.
+> En conclusión, el Eje 3 implementa un flujo de voto autenticado y verificable, garantiza un voto por usuario, edición y categoría incluso bajo concurrencia, permite consultar las participaciones y expone información pública mediante una API de solo lectura. La solución queda respaldada por MySQL 8.4, control de versiones y 114 pruebas automatizadas. Muchas gracias.
 
 ## 7. Relación CP-minuto
 
@@ -293,7 +293,7 @@ No es necesario ejecutar la suite completa durante la grabación si su duración
 - [ ] CP-01 a CP-10 tienen evidencia o explicación verificable.
 - [ ] CP-09 muestra la prueba concurrente en `ok`.
 - [ ] CP-10 muestra la URL y el JSON de la API.
-- [ ] La suite de 108 pruebas aparece claramente.
+- [ ] La suite de 114 pruebas aparece claramente.
 - [ ] No se muestran contraseñas, tokens, cookies o archivos `.env`.
 - [ ] No se revelan opciones de usuarios reales.
 - [ ] Los minutos definitivos se registraron en matriz, ficha y PDF.

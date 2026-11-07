@@ -14,7 +14,7 @@ Las evidencias deben demostrar:
 - Validaciones CP-01 a CP-10.
 - Control de concurrencia.
 - Funcionamiento de `GET /api/categorias/`.
-- Ejecución satisfactoria de 108 pruebas automatizadas.
+- Ejecución satisfactoria de 114 pruebas automatizadas.
 
 El detalle de cada captura se encuentra en:
 
@@ -203,8 +203,8 @@ python manage.py test -v 2
 Resultado de referencia:
 
 ```text
-Found 108 test(s).
-Ran 108 tests
+Found 114 test(s).
+Ran 114 tests
 OK
 ```
 
@@ -228,7 +228,7 @@ OK
 - [ ] La restricción única muestra sus tres columnas.
 - [ ] CP-09 muestra el resultado `ok`.
 - [ ] CP-10 muestra la URL y un JSON legible.
-- [ ] La suite completa muestra 108 pruebas y `OK`.
+- [ ] La suite completa muestra 114 pruebas y `OK`.
 - [ ] Todas las capturas son PNG y legibles.
 - [ ] Las salidas importantes también se conservaron en TXT.
 - [ ] No existen secretos ni datos personales.

@@ -53,7 +53,7 @@ Los nombres deben escribirse en minúsculas, sin espacios y sin tildes.
 | 11 | Consulta administrativa y persistencia | CP-08 | PNG | Pendiente |
 | 12 | Prueba de concurrencia | CP-09 | PNG/TXT | Pendiente |
 | 13 | API de categorías | CP-10 | PNG | Pendiente |
-| 14 | Suite completa de 108 pruebas | Calidad | PNG/TXT | Pendiente |
+| 14 | Suite completa de 114 pruebas | Calidad | PNG/TXT | Pendiente |
 | 15 | Repositorio público y README | Reproducibilidad | PNG | Pendiente |
 
 ## 5. Detalle de evidencias
@@ -263,9 +263,9 @@ python manage.py test elecciones.test_eje3_concurrencia -v 2
 python manage.py test -v 2
 ```
 
-**Debe mostrar:** `Found 108 test(s)`, `Ran 108 tests` y `OK`.
+**Debe mostrar:** `Found 108 test(s)`, `Ran 114 tests` y `OK`.
 
-**Pie sugerido:** Suite completa ejecutada sobre MySQL: 108 pruebas aprobadas, sin fallos ni errores.
+**Pie sugerido:** Suite completa ejecutada sobre MySQL: 114 pruebas aprobadas, sin fallos ni errores.
 
 ### Figura 15. Repositorio y documentación
 
@@ -313,7 +313,7 @@ Antes de confirmar el archivo en Git, revisar que no contenga secretos o datos p
 - [ ] Los pies de figura explican qué se demuestra, no solo qué se ve.
 - [ ] Los minutos del video se completaron después de la edición final.
 - [ ] Los enlaces del repositorio y del video se validaron en ventana privada.
-- [ ] La suite final muestra 108 pruebas aprobadas.
+- [ ] La suite final muestra 114 pruebas aprobadas.
 
 ## 8. Registro de minutos del video
 

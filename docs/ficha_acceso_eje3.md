@@ -152,7 +152,7 @@ python manage.py runserver 0.0.0.0:8000
 | Configuración Django | `python manage.py check` | Sin problemas identificados |
 | Cambios de modelo | `python manage.py makemigrations --check` | `No changes detected` |
 | Migraciones pendientes | `python manage.py migrate --plan` | Sin operaciones pendientes |
-| Suite completa | `python manage.py test -v 2` | 108 pruebas aprobadas |
+| Suite completa | `python manage.py test -v 2` | 114 pruebas aprobadas |
 | API | Abrir `/api/categorias/` | HTTP 200 y JSON válido |
 | Restricción única | Introspección de MySQL | `usuario_id`, `edicion_id`, `categoria_id`; única |
 

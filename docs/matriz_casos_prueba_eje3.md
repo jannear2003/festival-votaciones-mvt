@@ -12,7 +12,7 @@ Esta matriz relaciona los diez casos de prueba obligatorios del Eje 3 con las re
 - Base temporal de pruebas: `test_festival_votaciones`.
 - Python: 3.12.
 - Django: 6.0.5.
-- Suite de referencia: 108 pruebas aprobadas, 0 fallos y 0 errores.
+- Suite de referencia: 114 pruebas aprobadas, 0 fallos y 0 errores.
 - Migración principal del Eje 3: `0006_unicidad_usuario_edicion_categoria`.
 - Restricción de base de datos: `una_participacion_por_usuario_edicion_categoria`.
 
@@ -348,8 +348,8 @@ python manage.py test -v 2
 Resultado de referencia:
 
 ```text
-Found 108 test(s).
-Ran 108 tests
+Found 114 test(s).
+Ran 114 tests
 OK
 ```
 

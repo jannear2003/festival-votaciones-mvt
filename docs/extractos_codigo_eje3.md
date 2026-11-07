@@ -519,8 +519,8 @@ python manage.py test -v 2
 Resultado de referencia:
 
 ```text
-Found 108 test(s).
-Ran 108 tests
+Found 114 test(s).
+Ran 114 tests
 OK
 ```
 
