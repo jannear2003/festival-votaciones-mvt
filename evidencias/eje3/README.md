@@ -249,9 +249,9 @@ Actualizar esta tabla durante el cierre:
 | Figura 04B | Sí | Sí | No | No |
 | Figura 05 | Sí | Sí | No | No |
 | Figura 06 | Sí | Sí | No | No |
-| Figura 07 | No | No | No | No |
-| Figura 08 | No | No | No | No |
-| Figura 09 | No | No | No | No |
+| Figura 07 | Si | Si | No | No |
+| Figura 08 | Si | Si | No | No |
+| Figura 09 | Si | Si | No | No |
 | Figura 10 | No | No | No | No |
 | Figura 11 | Sí | Sí | No | No |
 | Figura 12 | No | No | No | No |

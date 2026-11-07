@@ -1,0 +1,14 @@
+EVIDENCIA CP-04 - AUTENTICACION OBLIGATORIA
+Fecha UTC: 2026-11-07 19:41:03 UTC
+
+22 objects imported automatically (use -v 2 for details).
+
+Ruta solicitada: /votaciones/demo-eje3-subevento-uno/participar/
+Estado HTTP: 302
+Redirección: /cuentas/login/?next=/votaciones/demo-eje3-subevento-uno/participar/
+Redirige al login: True
+Conserva parámetro next: True
+Participaciones nuevas: 0
+Votos nuevos: 0
+Participaciones demo existentes: 2
+Votos demo existentes: 2

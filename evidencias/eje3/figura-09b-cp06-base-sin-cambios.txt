@@ -1,0 +1,7 @@
+EVIDENCIA COMPLEMENTARIA CP-06 - BASE PRINCIPAL SIN CAMBIOS
+Fecha UTC: 2026-11-07 19:43:37 UTC
+
+22 objects imported automatically (use -v 2 for details).
+
+Participaciones demo: 2
+Votos demo: 2

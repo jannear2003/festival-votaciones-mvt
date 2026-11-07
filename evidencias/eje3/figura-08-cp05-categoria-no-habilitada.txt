@@ -1,0 +1,14 @@
+EVIDENCIA CP-05 - CATEGORIA NO HABILITADA
+Fecha UTC: 2026-11-07 19:42:49 UTC
+
+Forbidden: /votaciones/demo-eje3-no-habilitada/participar/
+22 objects imported automatically (use -v 2 for details).
+
+Ruta solicitada: /votaciones/demo-eje3-no-habilitada/participar/
+Estado HTTP: 403
+Estado categoría: BORRADOR
+Visible: False
+Estado votación: BORRADOR
+Publicada: False
+Participaciones nuevas: 0
+Votos nuevos: 0
