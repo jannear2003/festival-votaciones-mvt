@@ -254,7 +254,7 @@ Actualizar esta tabla durante el cierre:
 | Figura 09 | Si | Si | No | No |
 | Figura 10 | No | No | No | No |
 | Figura 11 | Sí | Sí | No | No |
-| Figura 12 | No | No | No | No |
+| Figura 12 | Si | Si | No | No |
 | Figura 13 | No | No | No | No |
 | Figura 14 | No | No | No | No aplica |
 | Figura 15 | No | No | No | No aplica |

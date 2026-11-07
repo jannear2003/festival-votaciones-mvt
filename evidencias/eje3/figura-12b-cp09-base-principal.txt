@@ -1,0 +1,7 @@
+COMPROBACION POSTERIOR CP-09 - BASE PRINCIPAL
+Fecha UTC: 2026-11-07 23:47:18 UTC
+
+22 objects imported automatically (use -v 2 for details).
+
+Participaciones demo en base principal: 2
+Votos demo en base principal: 2
