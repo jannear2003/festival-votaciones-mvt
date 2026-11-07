@@ -263,7 +263,7 @@ python manage.py test elecciones.test_eje3_concurrencia -v 2
 python manage.py test -v 2
 ```
 
-**Debe mostrar:** `Found 108 test(s)`, `Ran 114 tests` y `OK`.
+**Debe mostrar:** `Found 114 test(s)`, `Ran 114 tests` y `OK`.
 
 **Pie sugerido:** Suite completa ejecutada sobre MySQL: 114 pruebas aprobadas, sin fallos ni errores.
 
