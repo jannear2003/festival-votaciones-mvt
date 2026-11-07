@@ -1,0 +1,23 @@
+EVIDENCIA 01 - ESTADO DE RAMAS
+Fecha UTC: 2026-11-07 17:56:04 UTC
+
+Rama actual:
+develop
+
+Estado:
+## develop...origin/develop
+
+Ultimo commit de main:
+dd69fa9 (origin/main, origin/HEAD) Merge pull request #9 from jannear2003/fix/revert-resultados-publicos-main
+
+Ultimos commits de develop:
+d077e64 (HEAD -> develop, origin/develop) Merge pull request #15 from jannear2003/feature/datos-demo-eje3
+17de57b (origin/feature/datos-demo-eje3, feature/datos-demo-eje3) feat: preparar datos controlados para demo del eje 3
+0b26dfb Merge pull request #14 from jannear2003/feature/entrega-eje3
+468c2df (origin/feature/entrega-eje3, feature/entrega-eje3) feat: agregar api de categorias y control de concurrencia
+
+Commit del PR 15 contenido en develop:
+Codigo de salida: 0
+
+Commit del PR 15 contenido en main:
+Codigo de salida: 1

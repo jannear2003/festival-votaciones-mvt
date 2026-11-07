@@ -1,0 +1,15 @@
+EVIDENCIA 02 - MYSQL Y CONEXION DE DJANGO
+Fecha UTC: 2026-11-07 17:59:46 UTC
+
+Estado del contenedor:
+NAME             IMAGE       COMMAND                  SERVICE   CREATED       STATUS                 PORTS
+festival-mysql   mysql:8.4   "docker-entrypoint.s…"   mysql     3 weeks ago   Up 2 hours (healthy)   127.0.0.1:3306->3306/tcp, 33060/tcp
+
+Conexion utilizada por Django:
+22 objects imported automatically (use -v 2 for details).
+
+Motor: mysql
+Base: festival_votaciones
+Host: 127.0.0.1
+Puerto: 3306
+Version del servidor: 8.4.11

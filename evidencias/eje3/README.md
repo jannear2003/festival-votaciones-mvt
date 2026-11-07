@@ -242,9 +242,9 @@ Actualizar esta tabla durante el cierre:
 
 | Evidencia | Capturada | Revisada | Incluida en PDF | Minuto registrado |
 |---|---|---|---|---|
-| Figura 01 | No | No | No | No aplica |
-| Figura 02 | No | No | No | No aplica |
-| Figura 03 | No | No | No | No aplica |
+| Figura 01 | Sí | Sí | No | No aplica |
+| Figura 02 | Sí | Sí | No | No aplica |
+| Figura 03 | Sí | Sí | No | No aplica |
 | Figura 04 | No | No | No | No |
 | Figura 05 | No | No | No | No |
 | Figura 06 | No | No | No | No |
