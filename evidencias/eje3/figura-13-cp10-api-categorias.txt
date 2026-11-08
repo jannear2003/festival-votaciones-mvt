@@ -1,0 +1,21 @@
+EVIDENCIA CP-10 - API PUBLICA DE CATEGORIAS
+Fecha UTC: 2026-11-08 00:01:22 UTC
+
+Method Not Allowed: /api/categorias/
+22 objects imported automatically (use -v 2 for details).
+
+Motor: mysql
+Base: festival_votaciones
+Versión MySQL: 8.4.11
+Estado GET: 200
+Content-Type: application/json
+Edición: Festival de la Leyenda Vallenata 2027
+Categorías devueltas: 6
+Votaciones devueltas: 7
+Opciones devueltas: 21
+Incluye categoría principal: True
+Incluye categoría alternativa: True
+Excluye categoría no habilitada: True
+Campos sensibles encontrados: []
+Estado POST: 405
+POST rechazado con HTTP 405: True
