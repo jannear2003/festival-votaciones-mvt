@@ -1,0 +1,263 @@
+EVIDENCIA 14 - SUITE COMPLETA DEL EJE 3
+Fecha UTC: 2026-11-08 00:11:40 UTC
+
+22 objects imported automatically (use -v 2 for details).
+
+Motor: mysql
+Base: festival_votaciones
+Versión MySQL: 8.4.11
+
+Ejecución de la suite completa:
+Creating test database for alias 'default' ('test_festival_votaciones')...
+Found 114 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: messages, staticfiles
+  Apply all migrations: admin, auth, contenttypes, elecciones, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying elecciones.0001_initial... OK
+  Applying elecciones.0002_participacion_voto_and_more... OK
+  Applying elecciones.0003_eventoauditoria_publicacionresultado... OK
+  Applying elecciones.0004_asociar_participacion_usuario... OK
+  Applying elecciones.0005_imagenes_configurables... OK
+  Applying elecciones.0006_unicidad_usuario_edicion_categoria... OK
+  Applying sessions.0001_initial...test_resultado_publico_no_exige_autenticacion (elecciones.test_acceso_resultados_publicos.AccesoResultadosPublicosTests.test_resultado_publico_no_exige_autenticacion) ... ok
+test_slug_inexistente_devuelve_404 (elecciones.test_acceso_resultados_publicos.AccesoResultadosPublicosTests.test_slug_inexistente_devuelve_404) ... ok
+test_visitante_puede_consultar_resultado_publicado (elecciones.test_acceso_resultados_publicos.AccesoResultadosPublicosTests.test_visitante_puede_consultar_resultado_publicado) ... ok
+test_votacion_sin_publicacion_activa_devuelve_404 (elecciones.test_acceso_resultados_publicos.AccesoResultadosPublicosTests.test_votacion_sin_publicacion_activa_devuelve_404) ... ok
+test_votacion_sin_resultados_publicos_devuelve_404 (elecciones.test_acceso_resultados_publicos.AccesoResultadosPublicosTests.test_votacion_sin_resultados_publicos_devuelve_404) ... ok
+test_cp10_devuelve_edicion_activa (elecciones.test_eje3_api_categorias.ApiCategoriasEje3Tests.test_cp10_devuelve_edicion_activa) ... ok
+test_cp10_excluye_datos_no_publicables (elecciones.test_eje3_api_categorias.ApiCategoriasEje3Tests.test_cp10_excluye_datos_no_publicables) ... ok
+test_cp10_get_devuelve_json_valido (elecciones.test_eje3_api_categorias.ApiCategoriasEje3Tests.test_cp10_get_devuelve_json_valido) ... ok
+test_cp10_incluye_categoria_y_opciones_reales (elecciones.test_eje3_api_categorias.ApiCategoriasEje3Tests.test_cp10_incluye_categoria_y_opciones_reales) ... ok
+test_cp10_no_expone_datos_sensibles (elecciones.test_eje3_api_categorias.ApiCategoriasEje3Tests.test_cp10_no_expone_datos_sensibles) ... ok
+test_cp10_rechaza_metodos_distintos_de_get (elecciones.test_eje3_api_categorias.ApiCategoriasEje3Tests.test_cp10_rechaza_metodos_distintos_de_get) ... ok
+test_cp10_sin_edicion_activa_devuelve_lista_vacia (elecciones.test_eje3_api_categorias.ApiCategoriasEje3Tests.test_cp10_sin_edicion_activa_devuelve_lista_vacia) ... ok
+test_cp01_voto_valido_se_registra_en_mysql (elecciones.test_eje3_votacion_categoria.CasosPruebaEje3Tests.test_cp01_voto_valido_se_registra_en_mysql) ... ok
+test_cp02_mysql_rechaza_duplicado_en_otro_subevento (elecciones.test_eje3_votacion_categoria.CasosPruebaEje3Tests.test_cp02_mysql_rechaza_duplicado_en_otro_subevento) ... ok
+test_cp02_no_permite_segundo_voto_en_misma_categoria (elecciones.test_eje3_votacion_categoria.CasosPruebaEje3Tests.test_cp02_no_permite_segundo_voto_en_misma_categoria) ... ok
+test_cp03_permite_votar_en_categoria_diferente (elecciones.test_eje3_votacion_categoria.CasosPruebaEje3Tests.test_cp03_permite_votar_en_categoria_diferente) ... ok
+test_cp04_visitante_no_puede_ingresar_al_flujo (elecciones.test_eje3_votacion_categoria.CasosPruebaEje3Tests.test_cp04_visitante_no_puede_ingresar_al_flujo) ... ok
+test_cp05_categoria_no_habilitada_rechaza_operacion (elecciones.test_eje3_votacion_categoria.CasosPruebaEje3Tests.test_cp05_categoria_no_habilitada_rechaza_operacion) ... ok
+test_cp06_opcion_de_otra_categoria_es_rechazada (elecciones.test_eje3_votacion_categoria.CasosPruebaEje3Tests.test_cp06_opcion_de_otra_categoria_es_rechazada) ... ok
+test_cp07_historial_muestra_las_categorias_votadas (elecciones.test_eje3_votacion_categoria.CasosPruebaEje3Tests.test_cp07_historial_muestra_las_categorias_votadas) ... ok
+test_cp08_registro_persistido_es_consultable (elecciones.test_eje3_votacion_categoria.CasosPruebaEje3Tests.test_cp08_registro_persistido_es_consultable) ... ok
+test_archivo_mayor_a_cinco_mb_es_rechazado (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_archivo_mayor_a_cinco_mb_es_rechazado) ... ok
+test_categoria_acepta_png_valido (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_categoria_acepta_png_valido) ... ok
+test_contenido_falso_con_extension_png_es_rechazado (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_contenido_falso_con_extension_png_es_rechazado) ... ok
+test_detalle_muestra_imagen_de_opcion (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_detalle_muestra_imagen_de_opcion) ... ok
+test_edicion_sin_archivo_conserva_imagen_actual (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_edicion_sin_archivo_conserva_imagen_actual) ... ok
+test_extension_no_permitida_es_rechazada (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_extension_no_permitida_es_rechazada) ... ok
+test_formulario_categoria_declara_multipart (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_formulario_categoria_declara_multipart) ... ok
+test_formulario_votacion_declara_multipart (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_formulario_votacion_declara_multipart) ... ok
+test_formularios_incluyen_imagen (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_formularios_incluyen_imagen) ... ok
+test_formularios_son_multipart (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_formularios_son_multipart) ... ok
+test_imagen_es_opcional (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_imagen_es_opcional) ... ok
+test_modelos_tienen_campos_de_imagen (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_modelos_tienen_campos_de_imagen) ... ok
+test_opcion_acepta_png_valido (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_opcion_acepta_png_valido) ... ok
+test_opcion_sin_imagen_no_genera_etiqueta_de_imagen (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_opcion_sin_imagen_no_genera_etiqueta_de_imagen) ... ok
+test_portal_usa_imagen_de_categoria_como_respaldo (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_portal_usa_imagen_de_categoria_como_respaldo) ... ok
+test_portal_usa_imagen_de_votacion (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_portal_usa_imagen_de_votacion) ... ok
+test_tipo_mime_no_permitido_es_rechazado (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_tipo_mime_no_permitido_es_rechazado) ... ok
+test_votacion_acepta_png_valido (elecciones.test_imagenes_configurables.ImagenesConfigurablesTests.test_votacion_acepta_png_valido) ... ok
+test_comprobante_no_revela_opcion_seleccionada (elecciones.test_mis_participaciones.MisParticipacionesTests.test_comprobante_no_revela_opcion_seleccionada) ... ok
+test_comprobante_se_recupera_sin_dato_en_sesion (elecciones.test_mis_participaciones.MisParticipacionesTests.test_comprobante_se_recupera_sin_dato_en_sesion) ... ok
+test_historial_no_muestra_identidad_de_otros_usuarios (elecciones.test_mis_participaciones.MisParticipacionesTests.test_historial_no_muestra_identidad_de_otros_usuarios) ... ok
+test_navegacion_anonima_no_muestra_enlace (elecciones.test_mis_participaciones.MisParticipacionesTests.test_navegacion_anonima_no_muestra_enlace) ... ok
+test_navegacion_autenticada_muestra_enlace (elecciones.test_mis_participaciones.MisParticipacionesTests.test_navegacion_autenticada_muestra_enlace) ... ok
+test_participacion_no_confirmada_no_aparece (elecciones.test_mis_participaciones.MisParticipacionesTests.test_participacion_no_confirmada_no_aparece) ... ok
+test_referencia_inexistente_devuelve_404 (elecciones.test_mis_participaciones.MisParticipacionesTests.test_referencia_inexistente_devuelve_404) ... ok
+test_registro_historico_sin_usuario_no_aparece (elecciones.test_mis_participaciones.MisParticipacionesTests.test_registro_historico_sin_usuario_no_aparece) ... ok
+test_usuario_no_puede_ver_comprobante_ajeno (elecciones.test_mis_participaciones.MisParticipacionesTests.test_usuario_no_puede_ver_comprobante_ajeno) ... ok
+test_usuario_no_ve_participacion_ajena (elecciones.test_mis_participaciones.MisParticipacionesTests.test_usuario_no_ve_participacion_ajena) ... ok
+test_usuario_sin_participaciones_ve_estado_vacio (elecciones.test_mis_participaciones.MisParticipacionesTests.test_usuario_sin_participaciones_ve_estado_vacio) ... ok
+test_usuario_ve_su_participacion_confirmada (elecciones.test_mis_participaciones.MisParticipacionesTests.test_usuario_ve_su_participacion_confirmada) ... ok
+test_visitante_es_redirigido_al_login (elecciones.test_mis_participaciones.MisParticipacionesTests.test_visitante_es_redirigido_al_login) ... ok
+test_conserva_un_radio_por_opcion_activa (elecciones.test_opciones_visuales.OpcionesVisualesTests.test_conserva_un_radio_por_opcion_activa) ... ok
+test_muestra_opciones_activas_y_oculta_inactiva (elecciones.test_opciones_visuales.OpcionesVisualesTests.test_muestra_opciones_activas_y_oculta_inactiva) ... ok
+test_opcion_con_imagen_muestra_img (elecciones.test_opciones_visuales.OpcionesVisualesTests.test_opcion_con_imagen_muestra_img) ... ok
+test_opcion_inactiva_es_rechazada (elecciones.test_opciones_visuales.OpcionesVisualesTests.test_opcion_inactiva_es_rechazada) ... ok
+test_opcion_sin_imagen_muestra_respaldo (elecciones.test_opciones_visuales.OpcionesVisualesTests.test_opcion_sin_imagen_muestra_respaldo) ... ok
+test_seleccion_valida_redirige_a_revision (elecciones.test_opciones_visuales.OpcionesVisualesTests.test_seleccion_valida_redirige_a_revision) ... ok
+test_categoria_negativa_no_esta_habilitada (elecciones.test_preparar_demo_eje3.PrepararDemoEje3Tests.test_categoria_negativa_no_esta_habilitada) ... ok
+test_configura_usuarios_y_rol_administrativo (elecciones.test_preparar_demo_eje3.PrepararDemoEje3Tests.test_configura_usuarios_y_rol_administrativo) ... ok
+test_crea_estructura_controlada (elecciones.test_preparar_demo_eje3.PrepararDemoEje3Tests.test_crea_estructura_controlada) ... ok
+test_reinicio_elimina_solo_votos_demo (elecciones.test_preparar_demo_eje3.PrepararDemoEje3Tests.test_reinicio_elimina_solo_votos_demo) ... ok
+test_segunda_ejecucion_no_duplica_registros (elecciones.test_preparar_demo_eje3.PrepararDemoEje3Tests.test_segunda_ejecucion_no_duplica_registros) ... ok
+test_votaciones_habilitadas_tienen_fechas_vigentes (elecciones.test_preparar_demo_eje3.PrepararDemoEje3Tests.test_votaciones_habilitadas_tienen_fechas_vigentes) ... ok
+test_cambio_exitoso_actualiza_la_contrasena (elecciones.test_recuperacion_password.RecuperacionPasswordTests.test_cambio_exitoso_actualiza_la_contrasena) ... ok
+test_contrasenas_diferentes_son_rechazadas (elecciones.test_recuperacion_password.RecuperacionPasswordTests.test_contrasenas_diferentes_son_rechazadas) ... ok
+test_correo_inexistente_no_revela_la_cuenta (elecciones.test_recuperacion_password.RecuperacionPasswordTests.test_correo_inexistente_no_revela_la_cuenta) ... ok
+test_correo_registrado_genera_mensaje (elecciones.test_recuperacion_password.RecuperacionPasswordTests.test_correo_registrado_genera_mensaje) ... ok
+test_enlace_utilizado_no_puede_reutilizarse (elecciones.test_recuperacion_password.RecuperacionPasswordTests.test_enlace_utilizado_no_puede_reutilizarse) ... ok
+test_formulario_de_solicitud_responde (elecciones.test_recuperacion_password.RecuperacionPasswordTests.test_formulario_de_solicitud_responde) ... ok
+test_login_muestra_enlace_de_recuperacion (elecciones.test_recuperacion_password.RecuperacionPasswordTests.test_login_muestra_enlace_de_recuperacion) ... ok
+test_respuesta_visible_es_neutral (elecciones.test_recuperacion_password.RecuperacionPasswordTests.test_respuesta_visible_es_neutral) ... ok
+test_token_manipulado_no_permite_cambio (elecciones.test_recuperacion_password.RecuperacionPasswordTests.test_token_manipulado_no_permite_cambio) ... ok
+test_usuario_puede_ingresar_con_nueva_contrasena (elecciones.test_recuperacion_password.RecuperacionPasswordTests.test_usuario_puede_ingresar_con_nueva_contrasena) ... ok
+test_contrasenas_diferentes_son_rechazadas (elecciones.test_registro.RegistroUsuarioTests.test_contrasenas_diferentes_son_rechazadas) ... ok
+test_correo_duplicado_es_rechazado (elecciones.test_registro.RegistroUsuarioTests.test_correo_duplicado_es_rechazado) ... ok
+test_formulario_registro_responde_y_usa_plantilla (elecciones.test_registro.RegistroUsuarioTests.test_formulario_registro_responde_y_usa_plantilla) ... ok
+test_login_respeta_next_para_ruta_publica_segura (elecciones.test_registro.RegistroUsuarioTests.test_login_respeta_next_para_ruta_publica_segura) ... ok
+test_login_superusuario_redirige_al_panel (elecciones.test_registro.RegistroUsuarioTests.test_login_superusuario_redirige_al_panel) ... ok
+test_login_usuario_con_grupo_administrativo_redirige_al_panel (elecciones.test_registro.RegistroUsuarioTests.test_login_usuario_con_grupo_administrativo_redirige_al_panel) ... ok
+test_login_usuario_publico_redirige_al_portal (elecciones.test_registro.RegistroUsuarioTests.test_login_usuario_publico_redirige_al_portal) ... ok
+test_nombre_de_usuario_duplicado_es_rechazado (elecciones.test_registro.RegistroUsuarioTests.test_nombre_de_usuario_duplicado_es_rechazado) ... ok
+test_registro_valido_crea_usuario_y_redirige_al_login (elecciones.test_registro.RegistroUsuarioTests.test_registro_valido_crea_usuario_y_redirige_al_login) ... ok
+test_superusuario_accede_al_panel_y_ve_enlaces (elecciones.test_registro.RegistroUsuarioTests.test_superusuario_accede_al_panel_y_ve_enlaces) ... ok
+test_usuario_autenticado_no_accede_al_registro (elecciones.test_registro.RegistroUsuarioTests.test_usuario_autenticado_no_accede_al_registro) ... ok
+test_usuario_publico_no_accede_a_django_admin (elecciones.test_registro.RegistroUsuarioTests.test_usuario_publico_no_accede_a_django_admin) ... ok
+test_usuario_publico_no_accede_al_panel_administrativo (elecciones.test_registro.RegistroUsuarioTests.test_usuario_publico_no_accede_al_panel_administrativo) ... ok
+test_usuario_publico_no_ve_enlaces_administrativos (elecciones.test_registro.RegistroUsuarioTests.test_usuario_publico_no_ve_enlaces_administrativos) ... ok
+test_usuario_registrado_puede_iniciar_y_cerrar_sesion (elecciones.test_registro.RegistroUsuarioTests.test_usuario_registrado_puede_iniciar_y_cerrar_sesion) ... ok
+test_cambiar_de_sesion_no_permite_otro_voto (elecciones.test_votacion_autenticada.VotacionAutenticadaTests.test_cambiar_de_sesion_no_permite_otro_voto) ... ok
+test_comprobante_solo_pertenece_al_usuario (elecciones.test_votacion_autenticada.VotacionAutenticadaTests.test_comprobante_solo_pertenece_al_usuario) ... ok
+test_otro_usuario_si_puede_participar (elecciones.test_votacion_autenticada.VotacionAutenticadaTests.test_otro_usuario_si_puede_participar) ... ok
+test_pagina_duplicada_requiere_participacion_real (elecciones.test_votacion_autenticada.VotacionAutenticadaTests.test_pagina_duplicada_requiere_participacion_real) ... ok
+test_participacion_historica_sin_usuario_es_valida (elecciones.test_votacion_autenticada.VotacionAutenticadaTests.test_participacion_historica_sin_usuario_es_valida) ... ok
+test_todas_las_rutas_del_voto_exigen_login (elecciones.test_votacion_autenticada.VotacionAutenticadaTests.test_todas_las_rutas_del_voto_exigen_login) ... ok
+test_usuario_autenticado_accede_al_formulario (elecciones.test_votacion_autenticada.VotacionAutenticadaTests.test_usuario_autenticado_accede_al_formulario) ... ok
+test_usuario_no_puede_votar_dos_veces (elecciones.test_votacion_autenticada.VotacionAutenticadaTests.test_usuario_no_puede_votar_dos_veces) ... ok
+test_visitante_es_redirigido_al_login (elecciones.test_votacion_autenticada.VotacionAutenticadaTests.test_visitante_es_redirigido_al_login) ... ok
+test_visitante_no_ve_el_formulario_de_voto (elecciones.test_votacion_autenticada.VotacionAutenticadaTests.test_visitante_no_ve_el_formulario_de_voto) ... ok
+test_visitante_puede_ver_detalle_y_opciones (elecciones.test_votacion_autenticada.VotacionAutenticadaTests.test_visitante_puede_ver_detalle_y_opciones) ... ok
+test_visitante_ve_invitacion_para_autenticarse (elecciones.test_votacion_autenticada.VotacionAutenticadaTests.test_visitante_ve_invitacion_para_autenticarse) ... ok
+test_voto_confirmado_se_asocia_al_usuario (elecciones.test_votacion_autenticada.VotacionAutenticadaTests.test_voto_confirmado_se_asocia_al_usuario) ... ok
+test_categoria_puede_repetirse_en_otra_edicion (elecciones.tests.GestionVotacionesTests.test_categoria_puede_repetirse_en_otra_edicion) ... ok
+test_categoria_visible_debe_estar_activa (elecciones.tests.GestionVotacionesTests.test_categoria_visible_debe_estar_activa) ... ok
+test_crear_votacion_con_dos_opciones (elecciones.tests.GestionVotacionesTests.test_crear_votacion_con_dos_opciones) ... ok
+test_detalle_muestra_opcion (elecciones.tests.GestionVotacionesTests.test_detalle_muestra_opcion) ... ok
+test_inicio_muestra_votacion_publicada (elecciones.tests.GestionVotacionesTests.test_inicio_muestra_votacion_publicada) ... ok
+test_lista_votaciones_requiere_datos_y_muestra_existente (elecciones.tests.GestionVotacionesTests.test_lista_votaciones_requiere_datos_y_muestra_existente) ... ok
+test_retirar_publicacion (elecciones.tests.GestionVotacionesTests.test_retirar_publicacion) ... ok
+test_categoria_puede_repetirse_en_otra_edicion (elecciones.tests.NucleoConfigurableTests.test_categoria_puede_repetirse_en_otra_edicion) ... ok
+test_categoria_visible_debe_estar_activa (elecciones.tests.NucleoConfigurableTests.test_categoria_visible_debe_estar_activa) ... ok
+test_detalle_muestra_opcion (elecciones.tests.NucleoConfigurableTests.test_detalle_muestra_opcion) ... ok
+test_inicio_muestra_votacion_publicada (elecciones.tests.NucleoConfigurableTests.test_inicio_muestra_votacion_publicada) ... ok
+test_cp09_dos_intentos_simultaneos_registran_un_voto (elecciones.test_eje3_concurrencia.ConcurrenciaEje3Tests.test_cp09_dos_intentos_simultaneos_registran_un_voto) ... ok
+
+----------------------------------------------------------------------
+Ran 114 tests in 39.729s
+
+OK
+Destroying test database for alias 'default' ('test_festival_votaciones')...
+ OK
+System check identified no issues (0 silenced).
+Datos de demostración del Eje 3 preparados.
+Edición: Festival de la Leyenda Vallenata 2027
+Categoría principal: Demo Eje 3 - Categoría principal
+Categoría alternativa: Demo Eje 3 - Categoría alternativa
+Categoría no habilitada: Demo Eje 3 - Categoría no habilitada
+Usuarios: demo_eje3_a, demo_eje3_b, demo_eje3_admin
+Vigencia de votaciones: 2026-11-07 23:11:55.432624+00:00 a 2026-11-15 00:11:55.432624+00:00
+Datos de demostración del Eje 3 preparados.
+Edición: Festival de la Leyenda Vallenata 2027
+Categoría principal: Demo Eje 3 - Categoría principal
+Categoría alternativa: Demo Eje 3 - Categoría alternativa
+Categoría no habilitada: Demo Eje 3 - Categoría no habilitada
+Usuarios: demo_eje3_a, demo_eje3_b, demo_eje3_admin
+Vigencia de votaciones: 2026-11-07 23:11:56.674589+00:00 a 2026-11-15 00:11:56.674589+00:00
+Datos de demostración del Eje 3 preparados.
+Edición: Festival de la Leyenda Vallenata 2027
+Categoría principal: Demo Eje 3 - Categoría principal
+Categoría alternativa: Demo Eje 3 - Categoría alternativa
+Categoría no habilitada: Demo Eje 3 - Categoría no habilitada
+Usuarios: demo_eje3_a, demo_eje3_b, demo_eje3_admin
+Vigencia de votaciones: 2026-11-07 23:11:59.107539+00:00 a 2026-11-15 00:11:59.107539+00:00
+Datos de demostración del Eje 3 preparados.
+Edición: Festival de la Leyenda Vallenata 2027
+Categoría principal: Demo Eje 3 - Categoría principal
+Categoría alternativa: Demo Eje 3 - Categoría alternativa
+Categoría no habilitada: Demo Eje 3 - Categoría no habilitada
+Usuarios: demo_eje3_a, demo_eje3_b, demo_eje3_admin
+Vigencia de votaciones: 2026-11-07 23:12:00.378720+00:00 a 2026-11-15 00:12:00.378720+00:00
+Reinicio controlado: 1 votos y 1 participaciones de demostración eliminados.
+Datos de demostración del Eje 3 preparados.
+Edición: Festival de la Leyenda Vallenata 2027
+Categoría principal: Demo Eje 3 - Categoría principal
+Categoría alternativa: Demo Eje 3 - Categoría alternativa
+Categoría no habilitada: Demo Eje 3 - Categoría no habilitada
+Usuarios: demo_eje3_a, demo_eje3_b, demo_eje3_admin
+Vigencia de votaciones: 2026-11-07 23:12:01.949338+00:00 a 2026-11-15 00:12:01.949338+00:00
+Datos de demostración del Eje 3 preparados.
+Edición: Festival de la Leyenda Vallenata 2027
+Categoría principal: Demo Eje 3 - Categoría principal
+Categoría alternativa: Demo Eje 3 - Categoría alternativa
+Categoría no habilitada: Demo Eje 3 - Categoría no habilitada
+Usuarios: demo_eje3_a, demo_eje3_b, demo_eje3_admin
+Vigencia de votaciones: 2026-11-07 23:12:03.173417+00:00 a 2026-11-15 00:12:03.173417+00:00
+Datos de demostración del Eje 3 preparados.
+Edición: Festival de la Leyenda Vallenata 2027
+Categoría principal: Demo Eje 3 - Categoría principal
+Categoría alternativa: Demo Eje 3 - Categoría alternativa
+Categoría no habilitada: Demo Eje 3 - Categoría no habilitada
+Usuarios: demo_eje3_a, demo_eje3_b, demo_eje3_admin
+Vigencia de votaciones: 2026-11-07 23:12:04.524671+00:00 a 2026-11-15 00:12:04.524671+00:00
+Datos de demostración del Eje 3 preparados.
+Edición: Festival de la Leyenda Vallenata 2027
+Categoría principal: Demo Eje 3 - Categoría principal
+Categoría alternativa: Demo Eje 3 - Categoría alternativa
+Categoría no habilitada: Demo Eje 3 - Categoría no habilitada
+Usuarios: demo_eje3_a, demo_eje3_b, demo_eje3_admin
+Vigencia de votaciones: 2026-11-07 23:12:05.887835+00:00 a 2026-11-15 00:12:05.887835+00:00
+Administrador general: 42 permisos configurados.
+Configurador: 14 permisos configurados.
+Operador: 7 permisos configurados.
+Publicador: 9 permisos configurados.
+Auditor: 10 permisos configurados.
+Roles y permisos separados correctamente.
+Administrador general: 42 permisos configurados.
+Configurador: 14 permisos configurados.
+Operador: 7 permisos configurados.
+Publicador: 9 permisos configurados.
+Auditor: 10 permisos configurados.
+Roles y permisos separados correctamente.
+Administrador general: 42 permisos configurados.
+Configurador: 14 permisos configurados.
+Operador: 7 permisos configurados.
+Publicador: 9 permisos configurados.
+Auditor: 10 permisos configurados.
+Roles y permisos separados correctamente.
+Administrador general: 42 permisos configurados.
+Configurador: 14 permisos configurados.
+Operador: 7 permisos configurados.
+Publicador: 9 permisos configurados.
+Auditor: 10 permisos configurados.
+Roles y permisos separados correctamente.
+Administrador general: 42 permisos configurados.
+Configurador: 14 permisos configurados.
+Operador: 7 permisos configurados.
+Publicador: 9 permisos configurados.
+Auditor: 10 permisos configurados.
+Roles y permisos separados correctamente.
+Administrador general: 42 permisos configurados.
+Configurador: 14 permisos configurados.
+Operador: 7 permisos configurados.
+Publicador: 9 permisos configurados.
+Auditor: 10 permisos configurados.
+Roles y permisos separados correctamente.
+Administrador general: 42 permisos configurados.
+Configurador: 14 permisos configurados.
+Operador: 7 permisos configurados.
+Publicador: 9 permisos configurados.
+Auditor: 10 permisos configurados.
+Roles y permisos separados correctamente.

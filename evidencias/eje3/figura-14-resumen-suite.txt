@@ -1,0 +1,11 @@
+]633;E;echo "EVIDENCIA 14 - SUITE COMPLETA DEL EJE 3";9ad6994b-b155-47ce-a2c1-660cb5ef2604]633;CEVIDENCIA 14 - SUITE COMPLETA DEL EJE 3
+
+Fecha UTC: 2026-11-08 00:11:40 UTC
+Motor: mysql
+Base: festival_votaciones
+Versión MySQL: 8.4.11
+
+Resultado de la suite:
+Found 114 test(s).
+Ran 114 tests in 39.729s
+OK
