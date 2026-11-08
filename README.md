@@ -8,7 +8,7 @@ La implementación correspondiente al Eje 3 utiliza MySQL 8.4 como motor princip
 
 - `main`: versión académica estable anterior al Eje 3.
 - `develop`: integración funcional del Eje 3 mediante los Pull Requests 13, 14 y 15.
-- `docs/entrega-eje3`: preparación de documentación y evidencias.
+- `docs/entrega-eje3`: código funcional integrado, documentación académica y evidencias del Eje 3.
 - `feature/entrega-eje3`: rama utilizada para implementar CP-01 a CP-10.
 - `feature/datos-demo-eje3`: rama utilizada para crear el comando de preparación de datos controlados.
 
@@ -135,10 +135,16 @@ Las dependencias Python se registran en `requirements.txt`.
 ```bash
 git clone https://github.com/jannear2003/festival-votaciones-mvt
 cd festival-votaciones-mvt
-git switch develop
+git switch docs/entrega-eje3
 ```
 
-Para revisar la versión académica anterior al Eje 3 debe utilizarse `main`.
+La rama `docs/entrega-eje3` contiene el código funcional integrado, la documentación académica y las evidencias del Eje 3. La rama `develop` contiene la integración funcional, mientras `main` conserva la versión académica anterior.
+
+Cuando se publique la etiqueta final, la versión evaluable podrá seleccionarse mediante:
+
+```bash
+git checkout entrega-eje3-v1.0
+```
 
 ### 2. Crear y activar un entorno virtual
 
@@ -161,6 +167,13 @@ python -m venv .venv
 ```bash
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+python -m pip check
+```
+
+El resultado esperado de `pip check` es:
+
+```text
+No broken requirements found.
 ```
 
 ### 4. Preparar las variables de MySQL
@@ -178,6 +191,15 @@ Copy-Item .env.mysql.example .env.mysql
 ```
 
 Edite `.env.mysql` y reemplace únicamente las contraseñas ficticias. No confirme este archivo en Git.
+
+Estructura de referencia:
+
+```text
+MYSQL_DATABASE=festival_votaciones
+MYSQL_USER=festival_app
+MYSQL_PASSWORD=CAMBIE_ESTA_CONTRASENA
+MYSQL_ROOT_PASSWORD=CAMBIE_ESTA_CONTRASENA_ROOT
+```
 
 ### 5. Iniciar MySQL 8.4
 
@@ -207,6 +229,21 @@ export DB_PORT=3306
 
 No muestre ni publique contraseñas.
 
+Compruebe la conexión:
+
+```bash
+python manage.py shell -c "
+from django.db import connection
+connection.ensure_connection()
+print('Motor:', connection.vendor)
+print('Base:', connection.settings_dict['NAME'])
+print('Usuario:', connection.settings_dict['USER'])
+with connection.cursor() as cursor:
+    cursor.execute('SELECT VERSION()')
+    print('Versión MySQL:', cursor.fetchone()[0])
+"
+```
+
 ### 7. Aplicar migraciones
 
 ```bash
@@ -219,20 +256,64 @@ La migración principal del Eje 3 es:
 elecciones.0006_unicidad_usuario_edicion_categoria
 ```
 
+Verifique que no existan migraciones pendientes:
+
+```bash
+python manage.py showmigrations elecciones
+python manage.py migrate --plan
+```
+
 ### 8. Cargar datos de demostración y configurar roles
+
+En una instalación nueva, primero cargue el fixture `datos_desarrollo` y después configure los grupos y permisos administrativos:
 
 ```bash
 python manage.py loaddata datos_desarrollo
 python manage.py configurar_roles
 ```
 
-El proyecto también contiene el comando `python manage.py seed_demo`. No combine ambas cargas sin revisar previamente sus datos.
+La carga del fixture `datos_desarrollo` es un requisito previo para ejecutar `preparar_demo_eje3`, porque crea el festival y la edición base que utiliza el comando.
+
+El orden requerido en una base de datos nueva es:
+
+```bash
+python manage.py migrate
+python manage.py loaddata datos_desarrollo
+python manage.py configurar_roles
+python manage.py preparar_demo_eje3
+```
+
+El resultado esperado de la carga del fixture es similar a:
+
+```text
+Installed 14 object(s) from 1 fixture(s)
+```
+
+La configuración de roles debe crear o actualizar los siguientes grupos:
+
+```text
+Administrador general
+Configurador
+Operador
+Publicador
+Auditor
+```
+
+El proyecto también contiene el comando:
+
+```bash
+python manage.py seed_demo
+```
+
+No combine `seed_demo` con `loaddata datos_desarrollo` sin revisar previamente los datos que crea cada alternativa.
 
 ### Preparar datos controlados del Eje 3
 
 El proyecto incluye un comando idempotente para crear o actualizar las cuentas, categorías, votaciones y opciones necesarias para demostrar los casos CP-01 a CP-10.
 
-Primero, defina las contraseñas como variables temporales de la terminal:
+Primero, defina las contraseñas como variables temporales de la terminal.
+
+Linux, macOS o Codespaces:
 
 ```bash
 read -s -p "Contraseña para cuentas públicas demo: " \
@@ -291,10 +372,18 @@ Las contraseñas no deben almacenarse en el repositorio, el README, las evidenci
 python manage.py createsuperuser
 ```
 
+Este paso es opcional si se utilizará únicamente la cuenta administrativa creada por `preparar_demo_eje3`.
+
 ### 10. Ejecutar la aplicación
 
 ```bash
 python manage.py runserver 0.0.0.0:8000
+```
+
+En una instalación local, abra:
+
+```text
+http://127.0.0.1:8000/
 ```
 
 ## Rutas principales
@@ -326,7 +415,9 @@ La respuesta JSON consulta datos reales de MySQL e incluye:
 
 La API no expone usuarios, correos, contraseñas, claves de sesión, referencias de participación, votos individuales ni la opción seleccionada por cada usuario.
 
-Los métodos distintos de `GET` reciben una respuesta HTTP 405.
+El endpoint admite únicamente el método `GET`.
+
+Una solicitud con otro método que supera las validaciones generales de seguridad recibe HTTP 405 y el encabezado `Allow: GET`. Una solicitud POST externa sin un token CSRF válido puede ser rechazada previamente con HTTP 403 por la protección CSRF global de Django.
 
 ## Autenticación y autorización
 
@@ -345,6 +436,46 @@ Grupos administrativos:
 - Auditor.
 
 ## Pruebas automatizadas
+
+### Permisos de MySQL para ejecutar las pruebas
+
+La aplicación utiliza la base principal `festival_votaciones`. Las pruebas automatizadas de Django crean y eliminan una base temporal denominada `test_festival_votaciones`.
+
+El usuario de la aplicación necesita permisos adicionales sobre esa base temporal únicamente cuando se ejecutan las pruebas:
+
+```bash
+docker compose \
+  --env-file .env.mysql \
+  -f compose.mysql.yml \
+  exec -T \
+  -e MYSQL_PWD="$MYSQL_ROOT_PASSWORD" \
+  mysql \
+  mysql -uroot \
+  -e "
+GRANT ALL PRIVILEGES
+ON \`test_festival_votaciones\`.*
+TO '${MYSQL_USER}'@'%';
+
+FLUSH PRIVILEGES;
+"
+```
+
+Este permiso no convierte al usuario de la aplicación en administrador global de MySQL. Se limita a la base temporal de pruebas.
+
+Puede comprobar los permisos mediante:
+
+```bash
+docker compose \
+  --env-file .env.mysql \
+  -f compose.mysql.yml \
+  exec -T \
+  -e MYSQL_PWD="$MYSQL_ROOT_PASSWORD" \
+  mysql \
+  mysql -uroot \
+  -e "
+SHOW GRANTS FOR '${MYSQL_USER}'@'%';
+"
+```
 
 Comprobaciones generales:
 
